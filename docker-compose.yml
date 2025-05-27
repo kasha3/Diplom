@@ -1,0 +1,18 @@
+services:
+  apiproject:
+    build:
+      context: ./TestAPI
+    ports:
+      - "5000:80"
+      - "7233:80"
+    container_name: api
+    restart: always
+
+  methodichkiweb:
+    build:
+      context: ./MethodicalInstructions
+    ports:
+      - "7090:80"
+      - "5149:80"
+    container_name: methodicalinstructions
+    restart: always

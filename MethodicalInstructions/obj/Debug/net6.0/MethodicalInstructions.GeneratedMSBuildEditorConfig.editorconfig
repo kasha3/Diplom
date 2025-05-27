@@ -9,71 +9,71 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = MethodicalInstructions
 build_property.RootNamespace = MethodicalInstructions
-build_property.ProjectDir = C:\Users\Admin\Desktop\diplom\Методические указания\MethodicalInstructions\
+build_property.ProjectDir = C:\Users\Admin\Desktop\diplom\modules\MethodicalInstructions\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 6.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = C:\Users\Admin\Desktop\diplom\Методические указания\MethodicalInstructions
+build_property.MSBuildProjectDirectory = C:\Users\Admin\Desktop\diplom\modules\MethodicalInstructions
 build_property._RazorSourceGeneratorDebug = 
 
-[C:/Users/Admin/Desktop/diplom/Методические указания/MethodicalInstructions/Pages/Error.cshtml]
+[C:/Users/Admin/Desktop/diplom/modules/MethodicalInstructions/Pages/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRXJyb3IuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/diplom/Методические указания/MethodicalInstructions/Pages/Index.cshtml]
+[C:/Users/Admin/Desktop/diplom/modules/MethodicalInstructions/Pages/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/diplom/Методические указания/MethodicalInstructions/Pages/Privacy.cshtml]
+[C:/Users/Admin/Desktop/diplom/modules/MethodicalInstructions/Pages/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJpdmFjeS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/diplom/Методические указания/MethodicalInstructions/Pages/Sessions/Introduction.cshtml]
+[C:/Users/Admin/Desktop/diplom/modules/MethodicalInstructions/Pages/Sessions/Introduction.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2Vzc2lvbnNcSW50cm9kdWN0aW9uLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/diplom/Методические указания/MethodicalInstructions/Pages/Sessions/Requirements.cshtml]
+[C:/Users/Admin/Desktop/diplom/modules/MethodicalInstructions/Pages/Sessions/Requirements.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2Vzc2lvbnNcUmVxdWlyZW1lbnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/diplom/Методические указания/MethodicalInstructions/Pages/Sessions/Session1.cshtml]
+[C:/Users/Admin/Desktop/diplom/modules/MethodicalInstructions/Pages/Sessions/Session1.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2Vzc2lvbnNcU2Vzc2lvbjEuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/diplom/Методические указания/MethodicalInstructions/Pages/Sessions/Session2.cshtml]
+[C:/Users/Admin/Desktop/diplom/modules/MethodicalInstructions/Pages/Sessions/Session2.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2Vzc2lvbnNcU2Vzc2lvbjIuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/diplom/Методические указания/MethodicalInstructions/Pages/Sessions/Session3.cshtml]
+[C:/Users/Admin/Desktop/diplom/modules/MethodicalInstructions/Pages/Sessions/Session3.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2Vzc2lvbnNcU2Vzc2lvbjMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/diplom/Методические указания/MethodicalInstructions/Pages/Sessions/Session4.cshtml]
+[C:/Users/Admin/Desktop/diplom/modules/MethodicalInstructions/Pages/Sessions/Session4.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2Vzc2lvbnNcU2Vzc2lvbjQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/diplom/Методические указания/MethodicalInstructions/Pages/Sessions/Session5.cshtml]
+[C:/Users/Admin/Desktop/diplom/modules/MethodicalInstructions/Pages/Sessions/Session5.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2Vzc2lvbnNcU2Vzc2lvbjUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/diplom/Методические указания/MethodicalInstructions/Pages/Sessions/Session6.cshtml]
+[C:/Users/Admin/Desktop/diplom/modules/MethodicalInstructions/Pages/Sessions/Session6.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2Vzc2lvbnNcU2Vzc2lvbjYuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/diplom/Методические указания/MethodicalInstructions/Pages/Shared/_ValidationScriptsPartial.cshtml]
+[C:/Users/Admin/Desktop/diplom/modules/MethodicalInstructions/Pages/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/diplom/Методические указания/MethodicalInstructions/Pages/_ViewImports.cshtml]
+[C:/Users/Admin/Desktop/diplom/modules/MethodicalInstructions/Pages/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/diplom/Методические указания/MethodicalInstructions/Pages/_ViewStart.cshtml]
+[C:/Users/Admin/Desktop/diplom/modules/MethodicalInstructions/Pages/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Admin/Desktop/diplom/Методические указания/MethodicalInstructions/Pages/Shared/_Layout.cshtml]
+[C:/Users/Admin/Desktop/diplom/modules/MethodicalInstructions/Pages/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = b-h2tsqkko59

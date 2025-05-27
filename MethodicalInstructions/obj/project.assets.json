@@ -14,11 +14,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Admin\\Desktop\\diplom\\Методические указания\\MethodicalInstructions\\MethodicalInstructions.csproj",
+      "projectUniqueName": "C:\\Users\\Admin\\Desktop\\diplom\\modules\\MethodicalInstructions\\MethodicalInstructions.csproj",
       "projectName": "MethodicalInstructions",
-      "projectPath": "C:\\Users\\Admin\\Desktop\\diplom\\Методические указания\\MethodicalInstructions\\MethodicalInstructions.csproj",
+      "projectPath": "C:\\Users\\Admin\\Desktop\\diplom\\modules\\MethodicalInstructions\\MethodicalInstructions.csproj",
       "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Admin\\Desktop\\diplom\\Методические указания\\MethodicalInstructions\\obj\\",
+      "outputPath": "C:\\Users\\Admin\\Desktop\\diplom\\modules\\MethodicalInstructions\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "D:\\Program Files (x86)\\SDK\\NuGetPackages"
