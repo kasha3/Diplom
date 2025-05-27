@@ -1,0 +1,1532 @@
+﻿@page
+@{
+    ViewData["Title"] = "Сессия 2";
+}
+<h1 class="text-center mt-4">Методические указания – Сессия 2</h1>
+<p><strong>Тема:</strong> Разработка Desktop-приложения</p>
+
+<h2>Модули в рамках сессии</h2>
+<ul>
+    <li>Модуль “Управление персоналом”</li>
+    <li>Модуль “Узлы структурных подразделений компании”</li>
+</ul>
+
+<h2>1. Разработка WPF-проекта</h2>
+<p>В данной сессии необходимо: </p>
+<ul>
+    <li>Реализовать Desktop-приложение WPF на языке C#</li>
+    <li>Добавить для API контроллеры и модели</li>
+    <li>Добавить процедуры базы данных (по возможности)</li>
+</ul>
+
+<div class="step">
+    <h3>1.1. Создание проекта WPF в Visual Studio</h3>
+    <p>Для разработки desktop-приложения будет использоваться платформа Windows Presentation Foundation (WPF). Выполните следующие шаги:</p>
+    <ol>
+        <li>Откройте Visual Studio 2022.</li>
+        <li>Выберите <strong>Create a new project</strong>.</li>
+        <li>В списке шаблонов найдите и выберите <strong>WPF App (.NET Core)</strong> или <strong>WPF App (.NET 6/7)</strong> (в зависимости от версии Visual Studio).</li>
+        <li>Нажмите <strong>Next</strong>, введите имя проекта, например <code>BusinessDesktop</code>, выберите расположение и нажмите <strong>Create</strong>.</li>
+        <li>Убедитесь, что проект успешно создан и запустите его с помощью кнопки <strong>Start</strong>.</li>
+    </ol>
+</div>
+
+<div class="step">
+    <h3>1.2. Настройка структуры проекта</h3>
+    <p>Создайте следующие папки для разделения логики и представления:</p>
+    <ul>
+        <li><strong>Elements</strong> – для пользовательского элемента управления (карточка сотрудника),</li>
+        <li><strong>Images (resources)</strong> – для ресурсов приложения (логотип),</li>
+        <li><strong>Models</strong> – для классов данных и подключения к API (например, Employee, Department),</li>
+        <li><strong>Pages</strong> – для XAML-страниц пользовательского интерфейса.</li>
+    </ul>
+
+    <p>Таким образом, у вас должна получиться структура, как показано на рисунке 1 ниже.</p>
+    <div class="screenshot">
+        <img src="~/data/img/session2/project_structure.png" alt="Структура проекта в обозревателе решений Visual Studio">
+        <p>Рис. 1. Структура проекта</p>
+    </div>
+
+    <p>В предложенных ресурсах в файлах сессии, добавьте рисунки логотипа в формате <code>.png</code> и <code>.ico</code> в папку ресурсов - <code>Images</code>.</p>
+</div>
+
+<div class="step">
+    <h3>1.3. Добавление моделей</h3>
+    <p>Приступим к созданию проекта. Это будет обычный CRUD, с 4 базовыми операциями: <strong>Create</strong> - создание, <strong>Read</strong> - чтение, 
+        <strong>Update</strong> - обновление, <strong>Delete</strong> - удаление. Создайте файл <code>Employee.cs</code> в папке <code>Models</code> со следующим содержимым:</p>
+    <pre><code>
+    public class Employee : INotifyPropertyChanged
+    {
+        public int Id { get; set; } //Идентификатор сотрудника
+        public int PositionId { get; set; } //Идентификатор должности
+        public string? FullName { get; set; } //ФИО
+        public DateTime BirthDate { get; set; } //Дата рождения
+        public string? WorkPhone { get; set; } //Рабочий телефон
+        public string? Office { get; set; } //Кабинет
+        public string? Email { get; set; } //Email
+        public string? MobilePhone { get; set; } //Мобильный телефон
+        public int? DirectorId { get; set; } //Идентификатор руководителя
+        public int? AssistantId { get; set; } //Идентификатор помощника
+        public DateTime? TerminationDate { get; set; } //Дата увольнения
+        public Position? Position { get; set; } //Должность, по ней можно узнать Departament, depId, depName
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+</code></pre>
+    <p>Также остается добавить остальные модели, использующиеся в приложении: <code>Absences.cs</code> (для отпусков, прогулов), <code>Departament.cs</code> (для подразделений), <code>Organization.cs</code> (для организаций), <code>Position.cs</code> (для должностей), <code>CanvasDepartament.cs</code> (для canvas гридов).</p>
+    <pre><code>
+    public enum AbsenceType // перечисление
+    {
+        обучение,
+        отгул,
+        отсутствие,
+        отпуск
+    }
+    public class Absences
+    {
+        [Key]
+        public int Id { get; set; } // Идентификатор
+        public int EmployeeId { get; set; } // Код сотрудника
+        public DateTime? StartDate { get; set; } // Начальная дата
+        public DateTime? EndDate { get; set; } // Конечная дата
+        [Required]
+        [Column(TypeName = "VARCHAR(20)")]
+        public AbsenceType? Type { get; set; } // Тип отпуска, прогула
+        public string? Description { get; set; } // Описание
+        public bool? Paid { get; set; } // Оплачиваемость
+    }
+
+    public class CanvasDepartment
+    {
+        public string? Name { get; set; } // Название
+        public CanvasDepartment? Parent { get; set; } // Родитель
+        public Grid? BockScene { get; set; } // Grid
+    }
+
+    public class Departament
+    {
+        public int Id { get; set; } // Идентификатор
+        public int OrganizationId { get; set; } // Код организации
+        public string? Name { get; set; } // Название
+        public Organization? Organization { get; set; } // Модель организации
+    }
+
+    public class Organization
+    {
+        public int Id { get; set; } // Идентификатор
+        public string? Name { get; set; } // Название
+    }
+        
+    public class Position
+    {
+        public int Id { get; set; } // Идентификатор
+        public int DepartamentId { get; set; } // Код подразделения
+        public string? Name { get; set; } // Название должности
+        public Departament? Departament { get; set; } // Модель подразделения
+    }
+    </code></pre>
+</div>
+
+<div class="step">
+    <h3>1.4. Настройка главного окна MainWindow.xaml</h3>
+    <p>Для начала настроим внешний вид главного окна приложения, которое будет содержать заголовок и основную рабочую область. Откройте файл <code>MainWindow.xaml</code> и замените содержимое следующим кодом:</p>
+
+    <pre><code>&lt;Grid&gt;
+    &lt;Grid x:Name="HeaderGrid" VerticalAlignment="Top" Height="70" Background="#78B24B"&gt;
+        &lt;Image Source="/Images/Logo.png" Width="60" Height="60" HorizontalAlignment="Left" Margin="10,0,0,0"/&gt;
+        &lt;Border Height="35" CornerRadius="10" Margin="100,0,100,0" Padding="5" Background="White"&gt;
+            &lt;TextBox IsEnabled="False" x:Name="HeaderTbx" Text="Организационная структура" 
+                     Background="Transparent" BorderThickness="0" 
+                     VerticalContentAlignment="Center" FontSize="14"/&gt;
+        &lt;/Border&gt;
+    &lt;/Grid&gt;
+
+    &lt;Frame x:Name="frame" Margin="0,70,0,0" NavigationUIVisibility="Hidden"/&gt;
+&lt;/Grid&gt;
+</code></pre>
+
+    <p>В верхней части окна размещается логотип и заголовок приложения. Ниже — элемент <code>Frame</code>, в который будет подгружаться содержимое страниц.</p>
+</div>
+
+<div class="step">
+    <h3>1.5. Логика загрузки окна MainWindow.xaml.cs</h3>
+    <p>Перейдите в файл <code>MainWindow.xaml.cs</code> и добавьте следующий код для обработки загрузки главной страницы:</p>
+
+    <pre><code>public partial class MainWindow : Window
+{
+    public static MainWindow init;
+
+    public MainWindow()
+    {
+        InitializeComponent();
+        LoadMain();
+        init = this;
+    }
+
+    private void LoadMain()
+    {
+        frame.Navigate(new Pages.Main());
+    }
+}
+</code></pre>
+    <p>Метод <code>LoadMain</code> автоматически загружает основную страницу (<code>Main.xaml</code>) при запуске. Объект <code>init</code> служит для глобального доступа к главному окну при необходимости.</p>
+    <p class="note">
+        Ни в коем случае нельзя убирать конструктор класса с методом <code>InitializeComponent()</code>, это приведет к критической ошибке приложения.
+    </p>
+</div>
+
+<div class="step">
+    <h3>1.6. Подключение библиотек</h3>
+    <ol>
+        <li>
+            Добавьте в проект NuGet-пакеты:
+            <ul>
+                <li><code>Microsoft.EntityFrameworkCore</code></li>
+                <li><code>Pomelo.EntityFrameworkCore.MySql</code> (для MySQL)</li>
+                <li><code>Newtonsoft.Json</code> (для работы с JSON)</li>
+            </ul>
+        </li>
+        <li>Создайте класс - контекст <code>HRContext</code> в папке <code>Models</code>:</li>
+    </ol>
+    <pre>
+    public class HRContext : DbContext
+    {
+        public DbSet&lt;Employee&gt; Employees { get; set; }
+        public DbSet&lt;Position&gt; Positions { get; set; }
+        public DbSet&lt;Departament&gt; Departaments { get; set; }
+        public DbSet&lt;Organization&gt; Organizations { get; set; }
+        public DbSet&lt;Absences&gt; Absences { get; set; }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseMySql("server=server_name;port=3306;database=db_name;user=userName;pwd=;AllowPublicKeyRetrieval=True;"
+            , new MySqlServerVersion(new Version(8, 0, 11)));
+        }
+    }
+    </pre>
+
+    <p class="note">
+        Класс <code>HRContext</code> предназначен для работы с базой данных напрямую, если вы не будете использовать API для этого.
+    </p>
+
+    <p>В следующем шаге перейдем к доработке API-приложения. Для получения дополнительных высоких баллов, необходимо реализовать взаимодействие программных модулей с API, а не с базой данных напрямую.</p>
+</div>
+
+<h2>2. Добавление контроллеров и классов в API для работы с Desktop-приложением</h2>
+<p>На серверной стороне необходимо создать или расширить существующие контроллеры ASP.NET Core Web API, чтобы они могли обслуживать запросы от Desktop-клиента, и в дальнейшем от Web-решения и Android-приложения.</p>
+<ul>
+    <li>Создайте отдельные методы в контроллерах <code>EmployeesController</code>, <code>PositionsController</code>, <code>DepartmentController</code>, <code>OrganizationsController</code>, <code>AbsencesController</code>, <code>EventsController</code> и <code>NewsController</code>.</li>
+    <li>Добавьте маршруты, например <code>/api/v1/employees/desktop</code>, которые будут возвращать данные в нужном формате (например, без пагинации или дополнительных вложенных объектов).</li>
+    <li>Проверьте, что включены атрибуты <code>[HttpGet]</code>, <code>[HttpPost]</code>, <code>[HttpPut]</code> для соответствующих действий.</li>
+    <li>Не забывайте оставлять комментарии к запросам, за это можно получить дополнительный балл.</li>
+</ul>
+
+<p>Доработка контроллеров:</p>
+
+<pre><code>
+    [Route("api/v1/absences")]
+    [ApiController]
+    public class AbsencesController : ControllerBase
+    {
+        private readonly AppDbContext _db;
+        public AbsencesController(AppDbContext db) {  _db = db; }
+        /// &lt;summary&gt;
+        /// Получить список прогулов
+        /// &lt;summary&gt;
+        /// &lt;returns&gt;Список прогулов&lt;returns&gt;
+        [HttpGet]
+        public IActionResult GetAbsences()
+        {
+            return Ok(_db.absences.ToList());
+        }
+        /// &lt;summary&gt;
+        /// Создать новый прогул
+        /// &lt;summary&gt;
+        /// &lt;param name="abs"&gt;Прогул&lt;param&gt;
+        /// &lt;returns&gt;Новый прогул&lt;returns&gt;
+        [HttpPost]
+        public IActionResult PostAbsences([FromBody] Absences abs)
+        {
+            if (abs == null)
+            {
+                return BadRequest("Invalid data.");
+            }
+            try
+            {
+                _db.absences.Add(abs);
+                _db.SaveChanges();
+                return Ok(abs);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+        /// &lt;summary&gt;
+        /// Редактировать прогул
+        /// &lt;summary&gt;
+        /// &lt;param name="id"&gt;Идентификатор&lt;param&gt;
+        /// &lt;param name="updatedAbsence"&gt;Отредактируйте прогул&lt;param&gt;
+        /// &lt;returns&gt;&lt;returns&gt;
+        [HttpPut("{id}")]
+        public IActionResult UpdateAbsences(int id, [FromBody] Absences updatedAbsence)
+        {
+            if (updatedAbsence == null || id != updatedAbsence.Id)
+            {
+                return BadRequest("Invalid data.");
+            }
+            var absence = _db.absences.Find(id);
+            if (absence == null)
+            {
+                return NotFound("Absence not found.");
+            }
+            absence.EmployeeId = updatedAbsence.EmployeeId;
+            absence.StartDate = updatedAbsence.StartDate;
+            absence.EndDate = updatedAbsence.EndDate;
+            absence.Type = updatedAbsence.Type;
+            absence.Description = updatedAbsence.Description;
+            absence.Paid = updatedAbsence.Paid;
+            try
+            {
+                _db.SaveChanges();
+                return Ok();
+            }
+            catch (Exception ex) 
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+    }
+
+    [Route("api/v1/department")]
+    [ApiController]
+    public class DepartmentController : ControllerBase
+    {
+        private readonly AppDbContext _db;
+        public DepartmentController(AppDbContext db) { _db = db; }
+        [HttpGet]
+        public IActionResult GetDepartment() => Ok(_db.departaments.ToList());
+    }
+
+    [Route("api/v1/employees")]
+    [ApiController]
+    public class EmployeesController : ControllerBase
+    {
+        private readonly AppDbContext _db;
+        public EmployeesController(AppDbContext db) { _db = db; }
+        [HttpGet("web")]
+        public IActionResult GetEmployees()
+        {
+            var employees = _db.employees
+                .Select(e => new
+                {
+                    e.Id,
+                    e.FullName,
+                    e.Position.Name,
+                    e.Email,
+                    e.WorkPhone,
+                    Birthdate = _db.employees.FirstOrDefault(x => x.Id == e.Id).BirthDate.ToString("M") // по формату: day month
+                }).ToList();
+
+            return Ok(employees);
+        }
+        [HttpGet("desktop")]
+        public IActionResult GetAllEmployees()
+        {
+            return Ok(_db.employees.ToList());
+        }
+        [HttpPost]
+        public IActionResult PostEmployee([FromBody] Employees emp) 
+        {
+            if (emp == null)
+            {
+                return BadRequest("Invalid data.");
+            }
+            try
+            {
+                _db.employees.Add(emp);
+                _db.SaveChanges();
+                return Ok(emp);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+        [HttpPut("{id}")]
+        public IActionResult UpdateEmployee(int id, [FromBody] Employees updatedEmployee)
+        {
+            if (updatedEmployee == null || id != updatedEmployee.Id)
+            {
+                return BadRequest("Invalid data.");
+            }
+            var employee = _db.employees.Find(id);
+            if (employee == null)
+            {
+                return NotFound("Employee with this id not found.");
+            }
+            employee.PositionId = updatedEmployee.PositionId;
+            employee.FullName = updatedEmployee.FullName;
+            employee.BirthDate = updatedEmployee.BirthDate;
+            employee.WorkPhone = updatedEmployee.WorkPhone;
+            employee.Office = updatedEmployee.Office;
+            employee.Email = updatedEmployee.Email;
+            employee.MobilePhone = updatedEmployee.MobilePhone;
+            employee.DirectorId = updatedEmployee.DirectorId;
+            employee.AssistantId = updatedEmployee.AssistantId;
+            employee.TerminationDate = updatedEmployee.TerminationDate;
+            try
+            {
+                _db.SaveChanges();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+    }
+
+    [Route("api/v1/events")]
+    [ApiController]
+    public class EventsController : ControllerBase
+    {
+        private readonly AppDbContext _db;
+        public EventsController(AppDbContext db) { _db = db; }
+        [HttpGet]
+        public IActionResult GetEvents()
+        {
+            var events = _db.events.Select(
+                e => new
+                {
+                    e.Id,
+                    e.Name,
+                    Date = _db.events.FirstOrDefault(x => x.Id == e.Id).Date.ToString("dd.MM.yyyy"),
+                    AuthorName = _db.employees
+                    .Where(emp => emp.Id == e.AuthorId).Select(emp => emp.FullName).FirstOrDefault() ?? "Invalid Author",
+                    e.Description
+                });
+            return Ok(events);
+        }
+        [HttpGet("{eventId}/calendar")]
+        public IActionResult DownloadCalendar(int eventId)
+        {
+            var ev = _db.events.Find(eventId);
+            var authorName = _db.employees.FirstOrDefault(x => x.Id == ev.AuthorId).FullName;
+            if (ev == null) return NotFound();
+            var ics = $&#64;"BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+SUMMARY:{ev.Name}
+DTSTART:{ev.Date:yyyyMMddTHHmmssZ}
+UID:{Guid.NewGuid()}
+DESCRIPTION:{ev.Description}
+ORGANIZER:{authorName}
+STATUS:CONFIRMED
+END:VEVENT
+END:VCALENDAR";
+            return File(Encoding.UTF8.GetBytes(ics), "text/calendar", $"event {eventId}.ics");
+        }
+    }
+
+    [Route("api/v1/news")]
+    [ApiController]
+    public class NewsController : ControllerBase
+    {
+        private readonly AppDbContext _db;
+        public NewsController(AppDbContext db) { _db = db; }
+        [HttpGet]
+        public IActionResult GetNews()
+        {
+            var news = _db.news
+                .OrderByDescending(n => n.Date)
+                .Select(n => new
+                {
+                    n.Id,
+                    n.Name,
+                    Date = _db.news.FirstOrDefault(x => x.Id == n.Id).Date.ToString("dd.MM.yyyy"),
+                    n.Description,
+                    n.Image,
+                    n.Likes,
+                    n.Dislikes
+                });
+            return Ok(news);
+        }
+    }
+
+    [Route("api/v1/organizations")]
+    [ApiController]
+    public class OrganizationsController : ControllerBase
+    {
+        private readonly AppDbContext _db;
+        public OrganizationsController(AppDbContext db) {  _db = db; }
+        [HttpGet]
+        public IActionResult GetOrganizations() { return Ok(_db.organizations.ToList()); }
+    }
+
+    [Route("api/v1/positions")]
+    [ApiController]
+    public class PositionsController : ControllerBase
+    {
+        private readonly AppDbContext _db;
+        public PositionsController(AppDbContext db) {  _db = db; }
+        [HttpGet]
+        public IActionResult GetPositions() { return Ok(_db.positions.ToList()); }
+        [HttpPost]
+        public IActionResult PostPosition([FromBody] Position position)
+        {
+            if (position == null)
+            {
+                return BadRequest("Invalid data");
+            }
+            try
+            {
+                _db.positions.Add(position);
+                _db.SaveChanges();
+
+                return Ok(position);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+        [HttpPut("{id}")]
+        public IActionResult UpdatePosition(int id, [FromBody] Position updatedPosition)
+        {
+            if (updatedPosition == null || id != updatedPosition.Id)
+            {
+                return BadRequest("Invalid data.");
+            }
+            var position = _db.positions.Find(id);
+            if (position == null)
+            {
+                return NotFound("Position not found");
+            }
+            position.DepartamentId = updatedPosition.DepartamentId;
+            position.Name = updatedPosition.Name;
+            try
+            {
+                _db.SaveChanges();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+    }
+</code></pre>
+
+<p>Таким образом, Desktop-приложение сможет обращаться к API по предопределённым маршрутам.</p>
+
+<div class="step">
+    <h3>2.1. Добавьте в API в классе - контексте <code>AppDbContext</code> , находящемуся в папке: <code>Models</code> остальные модели данных:</h3>
+    <pre><code>
+    public class AppDbContext : DbContext
+    {
+        public AppDbContext(DbContextOptions&lt;AppDbContext&gt; options)
+            :base(options) { }
+        public DbSet&lt;User&gt; Users { get; set; } // Был добавлен в Сессии 1
+        public DbSet&lt;Document&gt; Documents { get; set; } // Был добавлен в Сессии 1
+        public DbSet&lt;Comment&gt; Comments { get; set; } // Был добавлен в Сессии 1
+        public DbSet&lt;Departament&gt; departaments { get; set; } // Для подразделений
+        public DbSet&lt;Employees&gt; employees { get; set; } // Для сотрудников
+        public DbSet&lt;Organization&gt; organizations { get; set; } // Для организаций
+        public DbSet&lt;Position&gt; positions { get; set; } // Для должностей
+        public DbSet&lt;News&gt; news { get; set; } // Для новостей
+        public DbSet&lt;Events&gt; events { get; set; } // Для событий
+        public DbSet&lt;WorkingCalendar&gt; WorkingCalendar { get; set; } // Для рабочего календаря
+        public DbSet&lt;Absences&gt; absences { get; set; } // Для отгулов
+    }
+    </code></pre>
+</div>
+
+<div class="step">
+    <h3>2.2. Создание класса <code>ApiContext</code> в проекте Desktop</h3>
+    <p>Создайте в папке <code>Models</code> вашего проекта Desktop файл <code>ApiContext.cs</code> и добавьте в него следующий код:</p>
+
+    <pre><code>using System;
+using System.IO;
+using System.Net;
+using System.Text;
+using System.Collections.Generic;
+using System.Windows;
+using Newtonsoft.Json;
+
+namespace TestDesktop.Models
+{
+    public class ApiContext
+    {
+        public readonly string baseURL = "http://API_IP:API_PORT/api/v1";
+
+        public List&lt;Employee&gt; GetEmployees()
+        {
+            try
+            {
+                HttpWebRequest request = (HttpWebRequest)WebRequest.
+                Create($"{baseURL}/employees/desktop"); // Создание запроса до конечной точки
+                request.Method = "GET"; // Метод запроса
+                request.ContentType = "application/json"; // Запрос в формате JSON
+                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) // Получение ответа от API
+                {
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream()))// Использование StreamReader для чтения
+                    {
+                        string json = reader.ReadToEnd(); // Записать в String JSON ответ
+                        return JsonConvert.DeserializeObject&lt;List&lt;Employee&gt;&gt;(json);// Преобразовать ответ из JSON в модель данных
+                    }
+                }
+            }
+            catch (Exception ex) { MessageBox.Show(ex.Message); return null; }
+        }
+
+        // ... Остальные методы: PostEmployee, PutEmployee, GetDepartaments, GetPositions и т.д.
+
+        public List&lt;Absences&gt; GetAbsences()
+        {
+            try
+            {
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create($"{baseURL}/absences");
+                request.Method = "GET";
+                request.ContentType = "application/json";
+                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                {
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+                    {
+                        string json = reader.ReadToEnd();
+                        return JsonConvert.DeserializeObject&lt;List&lt;Absences&gt;&gt;(json);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return null;
+            }
+        }
+
+        // Пример метода POST:
+        public Position PostPosition(Position newPosition)
+        {
+            try
+            {
+                string json = JsonConvert.SerializeObject(newPosition); // преобразовать в JSON формате
+                byte[] bytes = Encoding.UTF8.GetBytes(json); // получить кол-во байт
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create($"{baseURL}/positions");
+                request.Method = "POST"; // Метод запроса - POST
+                request.ContentType = "application/json";
+                request.ContentLength = bytes.Length;
+
+                using (Stream dataStream = request.GetRequestStream()) // Отправить запрос
+                {
+                    dataStream.Write(bytes, 0, bytes.Length);
+                }
+
+                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) // Получить ответ
+                {
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream())) 
+                    {
+                        string jsonResponse = reader.ReadToEnd();
+                        return JsonConvert.DeserializeObject&lt;Position&gt;(jsonResponse);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return null;
+            }
+        }
+        
+        // Пример метода PUT
+        public void PutEmployee(Employee redactEmployee)
+        {
+            string json = JsonConvert.SerializeObject((Employee)redactEmployee); 
+            // преобразовать данные о сотруднике в JSON формате
+            byte[] bytes = Encoding.UTF8.GetBytes(json); // Получить кол-во байт информации
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create($"{baseURL}/employees/{redactEmployee.Id}"); 
+            // Запрос до конечной точки
+            request.Method = "PUT"; // Метод PUT
+            request.ContentType = "application/json"; // Отправить в JSON формате
+            request.ContentLength = bytes.Length;
+            using (Stream dataStream = request.GetRequestStream()) // Используя Stream отправить запрос
+            {
+                dataStream.Write(bytes, 0, bytes.Length);
+            }
+        }
+    }
+}
+</code></pre>
+    <div class="note">
+        <p>Остальные методы запросов не так сложно реализовать. Если испытываете проблемы с этим, <a asp-page="/Sessions/Session6">ознакомьтесь с готовым материалом</a> в конце страницы.</p>
+    </div>
+    <p>Класс <code>ApiContext</code> обеспечивает прямое взаимодействие с API-сервером с помощью HTTP-запросов. В нём реализованы методы для получения, создания и редактирования сотрудников, должностей, подразделений, организаций и календаря отсутствий.</p>
+</div>
+
+<div class="step">
+    <h3>2.3. Разработка пользовательского элемента интерфейса</h3> 
+    <p>На данном этапе разрабатывается визуальный компонент, отображающий карточку сотрудника. Пользовательский элемент интерфейса реализован как <code>UserControl</code> в WPF. 
+        Он включает основную информацию о сотруднике: ФИО, должность и подразделение, рабочий телефон, e-mail и номер кабинета. 
+        Также предусмотрена кнопка для инициирования увольнения сотрудника.</p> <h4>Пример XAML-кода компонента:</h4> 
+        <pre><code>&lt;Grid Background="#78B24B" x:Name="MainGrid" Height="120" Margin="10"&gt; &lt;TextBlock x:Name="departamentAndPos" FontSize="12" 
+            Text="Адм. департамент - отдел" Margin="5,5,0,81"/&gt; &lt;
+            TextBlock x:Name="fullname" Text="Имя Фамилия Отчество" FontSize="16" Margin="5,30,0,55"/&gt; &lt;
+            TextBlock x:Name="phoneNumberAndEmail" Text="+7 (123) 456 - 78 90" FontSize="12" Margin="5,60,0,30"/&gt; &lt;
+            TextBlock x:Name="office" Text="А401" FontSize="12" Margin="5,90,0,0"/&gt; &lt;
+            Button x:Name="TerminateBtn" Content="❌" HorizontalAlignment="Right" VerticalAlignment="Bottom" 
+            Margin="10" Width="30" Height="30" Click="TerminateBtn_Click"/&gt; 
+        &lt;/Grid&gt;
+        </code></pre> 
+        <h4>Пример кода C#-логики компонента:</h4> 
+        <pre><code>
+        public partial class EmployeeItem : UserControl { Models.Employee _this;
+        public EmployeeItem(Models.Employee employee)
+        {
+            InitializeComponent();
+            if (employee != null)
+            {
+                _this = employee;
+
+                // Если сотрудник недавно уволен — применить серую окраску и уменьшить прозрачность
+                if (employee.TerminationDate != null &amp;&amp; employee.TerminationDate.Value.AddDays(30).Ticks &gt;= DateTime.Now.Ticks)
+                {
+                    UpdateEmployeeUI();
+                }
+                // Отображение информации
+                departamentAndPos.Text = Main.Departaments.ToList().FirstOrDefault(x =&gt; x.Id == 
+                Main.Positions.FirstOrDefault(p =&gt; p.Id == employee.PositionId).DepartamentId).Name
+                + " - " + Main.Positions.FirstOrDefault(p =&gt; p.Id == employee.PositionId).Name;
+
+                fullname.Text = employee.FullName;
+                phoneNumberAndEmail.Text = employee.WorkPhone + " " + employee.Email;
+                office.Text = employee.Office;
+                }
+
+                // Переход на страницу сотрудника при клике
+                MainGrid.MouseDown += (s, e) =&gt; {
+                MainWindow.init.frame.Navigate(new Pages.Employee(employee));
+                };
+        }
+// Обработка нажатия кнопки "Уволить"
+private void TerminateBtn_Click(object sender, RoutedEventArgs e)
+{
+    if (_this != null)
+    {
+        var result = MessageBox.Show($"Вы уверены что хотите уволить сотрудника {_this.FullName} ?",
+        "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+        if (result == MessageBoxResult.Yes)
+        {
+            _this.TerminationDate = DateTime.Now;
+            new ApiContext().PutEmployee(_this);
+            UpdateEmployeeUI();
+        }
+    }
+}
+
+    // Обновление внешнего вида карточки уволенного сотрудника
+    private void UpdateEmployeeUI()
+    {
+    MainGrid.Background = new SolidColorBrush(Colors.Gray);
+    MainGrid.Opacity = 0.8;
+    TerminateBtn.Visibility = Visibility.Hidden;
+    }
+}
+</code></pre>
+
+    <p>Такой подход позволяет повторно использовать компонент <code>EmployeeItem</code> на разных страницах приложения и легко обновлять внешний вид всех карточек сотрудников.</p>
+</div>
+
+<div class="step">
+    <h3>2.4. Разработка страниц</h3>
+    <p>После создания компонентного элемента интерфейса реализуются страницы WPF-приложения, на которых происходит отображение и управление данными.</p>
+    <p>Например, главная страница приложения может содержать структуру бизнеса и список всех сотрудников, отрисованный с использованием компонента <code>EmployeeItem</code>. Разметка главной страницы может быть оформлена следующим образом:</p>
+    <pre><code>
+&lt;Grid x:Name="MainGrid"&gt;
+&lt;Grid.ColumnDefinitions&gt;  
+&lt;ColumnDefinition Width="2*"/&gt;      
+&lt;ColumnDefinition Width="2*"/&gt;
+&lt;/Grid.ColumnDefinitions&gt;
+&lt;ScrollViewer x:Name="scrlViewGraph" HorizontalScrollBarVisibility="Visible" 
+VerticalScrollBarVisibility="Visible" 
+Background="LightGray" Margin="20" Grid.Column="0"&gt;
+        &lt;Canvas x:Name="canvas"/&gt;
+    &lt;/ScrollViewer&gt;
+    &lt;ScrollViewer Background="LightGray" Margin="20" Grid.Column="1"&gt;
+        &lt;StackPanel x:Name="parent"/&gt;
+    &lt;/ScrollViewer&gt;
+&lt;/Grid&gt;
+    </code></pre>
+    <p>В коде логики страницы (<code>Main.xaml.cs</code>) инициализируются коллекции данных, формируется иерархическая структура блоков подразделений, а также реализована отрисовка связей между подразделениями:</p>
+    <pre><code>
+// Сокращенная структура страницы Main.xaml.cs
+public partial class Main : Page
+{
+    public static List&lt;Models.Employee&gt; Employees { get; set; }
+    public static List&lt;Models.Departament&gt; Departaments { get; set; }
+    public static List&lt;Models.Organization&gt; Organizations { get; set; }
+    public static List&lt;Models.Position&gt; Positions { get; set; }
+    public static List&lt;Models.Absences&gt; Absences { get; set; }
+    public static Main? main;
+    public List&lt;CanvasDepartment&gt; canvasDepartments = new List&lt;CanvasDepartment&gt;();
+    public Main()
+    {
+        InitializeComponent();
+        Employees = new List&lt;Models.Employee&gt;();
+        Departaments = new List&lt;Models.Departament&gt;();
+        Organizations = new List&lt;Models.Organization&gt;();
+        Positions = new List&lt;Models.Position&gt;();
+        Absences = new List&lt;Models.Absences&gt;();
+        LoadDb(); // Метод загрузки данных в Списки List
+        LoadCanvasInfo(); // Загрузить данные в Canvas
+        CreateCanvas(); // Создать Canvas
+        main = this;
+        MainGrid.Children.Add(CreatePlusButton());
+    }
+    // Метод для заполнения canvasDepartments
+    private void LoadCanvasInfo()
+    {
+        canvasDepartments.Clear();
+        canvasDepartments.Add(new CanvasDepartment() { Name = "Дороги России" });
+        foreach (var org in Organizations)
+            canvasDepartments.Add(new CanvasDepartment() { Name = org.Name });
+        foreach (var dep in Departaments)
+            canvasDepartments.Add(new CanvasDepartment() { Name = dep.Name });
+    }
+    // Метод CreateCanvas формирует граф подразделений с отрисовкой стрелок
+    private void CreateCanvas()
+    {
+            List&lt;List&lt;CanvasDepartment&gt;&gt; LevelDepartments = new List&lt;List&lt;CanvasDepartment&gt;&gt;();
+            foreach (CanvasDepartment item in canvasDepartments)
+            {
+                string[] level = item.Name.Split('.');
+                if (LevelDepartments.Count == level.Length - 1)
+                    LevelDepartments.Add(new List&lt;CanvasDepartment&gt;());
+                LevelDepartments[level.Length - 1].Add(item);
+                if (level.Length &gt; 2)
+                {
+                    string ParentDepartment = item.Name.Split(' ')[0];
+                    ParentDepartment = ParentDepartment.Substring(0, ParentDepartment.Length - 2);
+                    item.Parent = LevelDepartments[level.Length - 2].Find(x =&gt; x.Name.Split(' ')[0] == ParentDepartment);
+                }
+                else if (level.Length == 2)
+                    item.Parent = LevelDepartments[level.Length - 2][0];
+            }
+            int MaxLevel = LevelDepartments.Max(x =&gt; x.Count);
+            int MaxWidth = 10 + 110 * MaxLevel;
+            canvas.Width = MaxWidth;
+            canvas.Height = LevelDepartments.Count * 100;
+            int Row = 0;
+            foreach (List&lt;CanvasDepartment&gt; items in LevelDepartments)
+            {
+                int Index = 0;
+                foreach (CanvasDepartment item in items)
+                {
+                    item.BockScene = CreateElement(item.Name);
+                    int PositionLeft = MaxWidth / 2 - (items.Count * 110 / 2) + 5 + (Index * 110);
+                    int PositionTop = Row * 90;
+                    item.BockScene.Margin = new Thickness(PositionLeft, PositionTop, 0, 0);
+                    canvas.Children.Add(item.BockScene);
+                    // Рисуем линию до родителя
+                    if (item.Parent != null)
+                    {
+                        Line Line = new Line()
+                        {
+                            Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#78B24B")),
+                            StrokeThickness = 2,
+                            X1 = PositionLeft + 50,
+                            Y1 = PositionTop - 10,
+                            X2 = item.Parent.BockScene.Margin.Left + 50,
+                            Y2 = item.Parent.BockScene.Margin.Top + 50,
+                        };
+                        Line Line2 = new Line()
+                        {
+                            Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#78B24B")),
+                            StrokeThickness = 2,
+                            X1 = PositionLeft + 50,
+                            Y1 = PositionTop - 10,
+                            X2 = PositionLeft + 50,
+                            Y2 = PositionTop - 5,
+                        };
+                        Polygon Arrow = new Polygon()
+                        {
+                            Points = new PointCollection() {
+                                new Point(0,0),
+                                new Point(10,0),
+                                new Point(5,5),
+                            },
+                            Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#78B24B")),
+                            Margin = new Thickness(PositionLeft + 45, PositionTop - 5, 0, 0)
+                        };
+                        canvas.Children.Add(Arrow);
+                        canvas.Children.Add(Line);
+                        canvas.Children.Add(Line2);
+                    }
+                    Index++;
+                }
+                Row++;
+            }
+    }
+    // Метод LoadEmployees заполняет правую панель сотрудниками в зависимости от выбранного подразделения
+    public void LoadEmployees(string department)
+    {
+        parent.Children.Clear();
+        if (department.StartsWith("Дороги России"))
+        {
+            foreach (var employee in Employees)
+            {
+                if (Employees.Last().Id == employee.Id)
+                {
+                    var lastElement = new Elements.EmployeeItem(employee);
+                    lastElement.Margin = new Thickness(0, 0, 0, 60);
+                    parent.Children.Add(lastElement);
+                }
+                else
+                {
+                    parent.Children.Add(new Elements.EmployeeItem(employee));
+                }
+            }
+        }
+        else if (department.Split(' ')[0].Count() == 4)
+        {
+           var FindDepartmentsIds = Departaments.Where(x =&gt; x.Name == department).Select(x =&gt; x.Id);
+           var FindPositionsIds = Positions.Where(x =&gt; FindDepartmentsIds.Contains(x.DepartamentId)).Select(x =&gt; x.Id);
+           foreach (var employee in Employees.Where(x =&gt; FindPositionsIds.Contains(x.PositionId)))
+                {
+                    if (Employees.Last().Id == employee.Id)
+                    {
+                        var lastElement = new Elements.EmployeeItem(employee);
+                        lastElement.Margin = new Thickness(0, 0, 0, 60);
+                        parent.Children.Add(lastElement);
+                    }
+                    else
+                    {
+                        parent.Children.Add(new Elements.EmployeeItem(employee));
+                    }
+                }
+            }
+            else if (department.Split(' ')[0].Count() &lt; 4)
+            {
+var FindDepartmentsIds = Departaments.Where(x =&gt; x.OrganizationId == Organizations.FirstOrDefault(x =&lt; x.Name == department).Id)
+.Select(x =&lt; x.Id);
+                var FindPositionsIds = Positions.Where(x =&gt; FindDepartmentsIds.Contains(x.DepartamentId)).Select(x =&gt; x.Id);
+                foreach (var employee in Employees.Where(x =&gt; FindPositionsIds.Contains(x.PositionId)))
+                {
+                    if (Employees.Last().Id == employee.Id)
+                    {
+                        var lastElement = new Elements.EmployeeItem(employee);
+                        lastElement.Margin = new Thickness(0, 0, 0, 60);
+                        parent.Children.Add(lastElement);
+                    }
+                    else
+                    {
+                        parent.Children.Add(new Elements.EmployeeItem(employee));
+                    }
+                }
+            }
+            else if (department.Split(' ')[0].Count() &lt; 4)
+            {
+                var FindDepartmentsIds = Departaments.Where(x =&gt; x.Name == department).Select(x =&gt; x.Id);
+      var FindPositionsIds = Positions.Where(x =&gt; FindDepartmentsIds.Contains(x.DepartamentId)).Select(x =&gt; x.Id);
+                foreach (var employee in Employees.Where(x =&gt; FindPositionsIds.Contains(x.PositionId)))
+                {
+                    if (Employees.Last().Id == employee.Id)
+                    {
+                        var lastElement = new Elements.EmployeeItem(employee);
+                        lastElement.Margin = new Thickness(0, 0, 0, 60);
+                        parent.Children.Add(lastElement);
+                    }
+                    else
+                    {
+                        parent.Children.Add(new Elements.EmployeeItem(employee));
+                    }
+                }
+            }
+    }
+    // Создание визуального блока подразделения
+    public Grid CreateElement(string Value)
+    {
+        Grid BlockDepartment = new Grid()
+        {
+            Width = 100,
+            Height = 50,
+            Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#b6db90"))
+        };
+        // Подсветка начального узла
+        if (Value.StartsWith("Дороги России"))
+            BlockDepartment.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#78B24B"));
+        BlockDepartment.MouseDown += (s, e) =&gt; { LoadEmployees(Value); };
+        TextBlock Text = new TextBlock()
+        {
+            Text = Value,
+            TextAlignment = TextAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
+            FontSize = 9,
+            TextWrapping = TextWrapping.Wrap
+        };
+        BlockDepartment.Children.Add(Text);
+        return BlockDepartment;
+    }
+    // Кнопка добавления сотрудника
+    private Button CreatePlusButton()
+    {
+        Button newButton = new Button()
+        {
+            Width = 60,
+            Height = 60,
+            Content = "+",
+            FontSize = 24,
+            Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#78B24B")),
+            VerticalAlignment = VerticalAlignment.Bottom,
+            HorizontalAlignment = HorizontalAlignment.Right,
+            Margin = new Thickness(20, 40, 40, 20)
+        };
+        newButton.Click += (s, e) =&gt; { MainWindow.init.frame.Navigate(new Pages.Employee(null)); };
+        Grid.SetColumn(newButton, 1);
+        return newButton;
+    }
+    // Метод загрузки данных из API
+    private void LoadDb()
+    {
+        ApiContext api = new ApiContext();
+        Employees = api.GetEmployees();
+        Departaments = api.GetDepartaments();
+        Organizations = api.GetOrganizations();
+        Positions = api.GetPositions();
+        Absences = api.GetAbsences();
+        // отображение всех сотрудников на старте
+    }
+}
+</code></pre>
+
+    <p>После чего, интерфейс главной страницы полностью готов, имеет два <code>ScrollViewer</code>, левый со структурой организации, правый с сотрудниками, как на рисунке 2.</p>
+
+    <div class="screenshot">
+        <img src="~/data/img/session2/main.png" alt="Main.xaml">
+        <p>Рис. 2. Интерфейс страницы Main</p>
+    </div>
+
+    <p>Следующей страницей будет: <code>Employee.xaml</code>, являющейся страницей карточки сотрудника, с его данными и отпусками/обучениями/прогулами.</p>
+    <p>XAML-Код страницы: </p>
+    <pre><code>
+    &lt;Grid Background="LightGray"&gt; 
+    &lt;Grid.ColumnDefinitions&gt; 
+    &lt;ColumnDefinition Width="*"/&gt; 
+    &lt;ColumnDefinition Width="*"/&gt; 
+    &lt;/Grid.ColumnDefinitions&gt;
+    &lt;Grid Background="White" Margin="20" Grid.Column="0"&gt;
+    &lt;TextBlock Grid.Column="0" Text="ФИО:" Margin="10,10,10,10" 
+    VerticalAlignment="Top" HorizontalAlignment="Left"/&gt; 
+    &lt;TextBox Name="FullNameTextBox" Width="200" Margin="10,30,10,10" 
+    VerticalAlignment="Top" HorizontalAlignment="Left" Grid.Column="0" /&gt; 
+    &lt;TextBlock Text="Мобильный телефон:" Margin="10,50,10,10" VerticalAlignment="Top" 
+    HorizontalAlignment="Left" Grid.Column="0" /&gt;
+    &lt;TextBox Name="MobilePhoneTextBox" Width="200" Margin="10,70,0,0" VerticalAlignment="Top" 
+    HorizontalAlignment="Left" MaxLength="20" Grid.Column="0" /&gt;
+    &lt;TextBlock Text="Дата рождения:" VerticalAlignment="Top" HorizontalAlignment="Left" 
+    Margin="10,90,0,0" Grid.Column="0" /&gt;
+    &lt;DatePicker Name="BirthDatePicker" Width="200" Margin="10,110,0,0" HorizontalAlignment="Left" 
+    VerticalAlignment="Top" Grid.Column="0" /&gt;
+    &lt;TextBlock Text="Подразделение:" VerticalAlignment="Top" HorizontalAlignment="Left" 
+    Margin="10,140,0,0" Grid.Column="0" /&gt;
+    &lt;ComboBox Name="DepartmentComboBox" SelectionChanged="DepartmentComboBox_SelectionChanged" 
+    Width="200" Margin="10,160,0,0" 
+    VerticalAlignment="Top" HorizontalAlignment="Left" Grid.Column="0" /&gt; 
+    &lt;TextBlock Text="Должность:" VerticalAlignment="Top" HorizontalAlignment="Left" 
+    Margin="10,185,0,0" Grid.Column="0" /&gt;
+    &lt;TextBox Name="PositionTextBox" Width="200" Margin="10,205,0,0" VerticalAlignment="Top" 
+    HorizontalAlignment="Left" Grid.Column="0" /&gt; 
+    &lt;TextBlock Text="Руководитель:" VerticalAlignment="Top" HorizontalAlignment="Left" 
+    Margin="10,230,0,0" Grid.Column="0" /&gt; 
+    &lt;ComboBox Name="DirectorComboBox" Width="200" Margin="10,250,0,0" HorizontalAlignment="Left" 
+    VerticalAlignment="Top" Grid.Column="0" /&gt;
+    &lt;TextBlock Text="Помощник:" VerticalAlignment="Top" HorizontalAlignment="Left" 
+    Margin="10,275,0,0" Grid.Column="0" /&gt; 
+    &lt;ComboBox Name="AssistantComboBox" Width="200" Margin="10,295,0,0" HorizontalAlignment="Left" 
+    VerticalAlignment="Top" Grid.Column="0" /&gt; 
+    &lt;TextBlock Text="Рабочий телефон:" VerticalAlignment="Top" HorizontalAlignment="Left" 
+    Margin="10,320,0,0" Grid.Column="0" /&gt; 
+    &lt;TextBox Name="WorkPhoneTextBox" Width="200" Margin="10,340,0,0" HorizontalAlignment="Left" 
+    MaxLength="20" VerticalAlignment="Top" Grid.Column="0" /&gt;
+    &lt;TextBlock Text="Электронная почта:" VerticalAlignment="Top" HorizontalAlignment="Left" 
+    Margin="10,360,0,0" Grid.Column="0" /&gt;
+    &lt;TextBox Name="EmailTextBox" Width="200" Margin="10,380,0,0" HorizontalAlignment="Left" 
+    VerticalAlignment="Top" Grid.Column="0" /&gt;
+    &lt;TextBlock Text="Кабинет:" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,400,0,0" Grid.Column="0" /&gt;
+    &lt;TextBox Name="OfficeTextBox" Width="200" Margin="10,420,0,0" MaxLength="10" HorizontalAlignment="Left" 
+    VerticalAlignment="Top" Grid.Column="0" /&gt;
+    &lt;Button Content="🖋️" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="50" Height="50" Margin="0,0,10,10" 
+    Click="SaveButton_Click" Grid.Column="0" /&gt;
+    &lt;/Grid&gt; 
+    &lt;Grid Margin="20" Background="White" Grid.Column="1"&gt;
+    &lt;StackPanel Orientation="Horizontal" Margin="20,20,0,0"&gt; 
+    &lt;Button Content="Прошедшие" Width="100" Height="30" Background="#78B24B" VerticalAlignment="Top" Click="FilterPastEvents" 
+    HorizontalAlignment="Left" Margin="0,0,0,0"/&gt; 
+    &lt;Button Content="Текущие" Width="100" Height="30" Background="#78B24B" VerticalAlignment="Top" Click="FilterCurrentEvents" 
+    HorizontalAlignment="Left" Margin="10,0,0,0"/&gt;
+    &lt;Button Content="Будущие" Width="100" Height="30" Background="#78B24B" VerticalAlignment="Top" Click="FilterFutureEvents"
+    HorizontalAlignment="Left" Margin="10,0,0,0"/&gt; 
+    &lt;/StackPanel&gt; 
+    &lt;TextBlock Text="Обучения" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20,70,0,0" FontSize="16"/&gt;
+    &lt;ListView x:Name="TrainingsListView" Margin="20,100,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" 
+    Height="80" Width="370" 
+    SelectionChanged="TrainingsListView_SelectionChanged"&gt;
+    &lt;ListView.ItemTemplate&gt; 
+    &lt;DataTemplate&gt; 
+    &lt;TextBlock&gt; 
+    &lt;TextBlock.Text&gt; 
+    &lt;MultiBinding StringFormat="{}{0:dd.MM.yyyy} - {1:dd.MM.yyyy}, {2}"&gt; &lt;Binding Path="StartDate"/&gt; 
+    &lt;Binding Path="EndDate"/&gt; 
+    &lt;Binding Path="Description"/&gt; 
+    &lt;/MultiBinding&gt; 
+    &lt;/TextBlock.Text&gt; 
+    &lt;/TextBlock&gt; &lt;/DataTemplate&gt; 
+    &lt;/ListView.ItemTemplate&gt; 
+    &lt;/ListView&gt; 
+    &lt;TextBlock Text="Отгулы" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20,190,0,0" FontSize="16"/&gt; 
+    &lt;ListView x:Name="AbsencesListView" VerticalAlignment="Top" HorizontalAlignment="Left" 
+    Margin="20,220,0,0" Height="80" Width="370" 
+    SelectionChanged="AbsencesListView_SelectionChanged"&gt; 
+    &lt;ListView.ItemTemplate&gt; 
+    &lt;DataTemplate&gt; 
+    &lt;TextBlock&gt; &lt;TextBlock.Text&gt; &lt;MultiBinding StringFormat="{}{0:dd.MM.yyyy} - {1:dd.MM.yyyy}, 
+    {2}"&gt; &lt;Binding Path="StartDate"/&gt; 
+    &lt;Binding Path="EndDate"/&gt; &lt;Binding Path="Description"/&gt; &lt;/MultiBinding&gt; 
+    &lt;/TextBlock.Text&gt; 
+    &lt;/TextBlock&gt; &lt;/DataTemplate&gt; 
+    &lt;/ListView.ItemTemplate&gt;
+    &lt;/ListView&gt; 
+    &lt;TextBlock Text="Отпуска" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20,310,0,0" FontSize="16"/&gt; 
+    &lt;ListView x:Name="VacationsListView" Margin="20,340,0,0" VerticalAlignment="Top" 
+    HorizontalAlignment="Left" Height="80" Width="370" 
+    SelectionChanged="VacationsListView_SelectionChanged"&gt; 
+    &lt;ListView.ItemTemplate&gt;
+    &lt;DataTemplate&gt; 
+    &lt;TextBlock&gt; &lt;TextBlock.Text&gt; &lt;MultiBinding StringFormat="{}{0:dd.MM.yyyy} - {1:dd.MM.yyyy}, 
+    {2}"&gt; &lt;Binding Path="StartDate"/&gt; 
+    &lt;Binding Path="EndDate"/&gt; &lt;Binding Path="Description"/&gt; &lt;/MultiBinding&gt; 
+    &lt;/TextBlock.Text&gt; 
+    &lt;/TextBlock&gt; &lt;/DataTemplate&gt;
+    &lt;/ListView.ItemTemplate&gt;
+    &lt;/ListView&gt; &lt;Button Content="+" x:Name="AddAbsenceBtn" HorizontalAlignment="Right" 
+    VerticalAlignment="Bottom" Width="50" Height="50" 
+    Margin="0,0,70,10" Click="Button_Click" Grid.Column="1" IsEnabled="False"/&gt; 
+    &lt;Button Content="↩️" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="50" Height="50" 
+    Margin="0,0,10,10" Click="BackButton_Click" Grid.Column="1" /&gt;
+    &lt;/Grid&gt; 
+    &lt;/Grid&gt; 
+    </code></pre>
+
+    <p>Логика страницы довольна большая: </p>
+
+    <pre><code>
+        public Models.Employee _thisEmployee; // Модель сотрудника
+        private List&lt;Absences&gt; allAbsences; // Список отгулов сотрудника
+        public Employee(Models.Employee employee)
+        {
+            InitializeComponent();
+            allAbsences = new List&lt;Absences&gt;();
+            DepartmentComboBox.Items.Clear(); // Очищаем комбо-боксы
+            DirectorComboBox.Items.Clear(); // Очищаем комбо-боксы
+            AssistantComboBox.Items.Clear(); // Очищаем комбо-боксы
+            foreach (var depItem in Main.Departaments) // Загрузка данных в комбобоксы
+            {
+                ComboBoxItem DepItem = new ComboBoxItem()
+                {
+                    Tag = depItem.Id,
+                    Content = depItem.Name.ToString(),
+                };
+                DepartmentComboBox.Items.Add(DepItem);
+            }
+            if (employee != null)
+            {
+                _thisEmployee = employee;
+                LoadData();
+                AddAbsenceBtn.IsEnabled = true;
+                FullNameTextBox.Text = _thisEmployee.FullName;
+                MobilePhoneTextBox.Text = _thisEmployee.MobilePhone;
+                BirthDatePicker.SelectedDate = _thisEmployee.BirthDate;
+                foreach (ComboBoxItem item in DepartmentComboBox.Items) // Загрузка данных в комбобоксы
+                {
+                    if (item.Content == Main.Departaments.FirstOrDefault(x => x.Id == Main.Positions.FirstOrDefault(x => x.Id == 
+                    _thisEmployee.PositionId).DepartamentId).Name) // В комбобоксе будет показываться подразделение сотрудника
+                    {
+                        DepartmentComboBox.SelectedItem = item;
+                    }
+                }
+                PositionTextBox.Text = Main.Positions.FirstOrDefault(x => x.Id == _thisEmployee.PositionId).Name;
+                WorkPhoneTextBox.Text = _thisEmployee.WorkPhone;
+                EmailTextBox.Text = _thisEmployee.Email;
+                OfficeTextBox.Text = _thisEmployee.Office;
+                if (_thisEmployee.DirectorId != null)
+                {
+                    foreach (var dir in Main.Employees)
+                    {
+                        if (dir.FullName == _thisEmployee.FullName)
+                        {
+                            return;
+                        }
+                        ComboBoxItem selectedItem = (ComboBoxItem)DepartmentComboBox.SelectedItem;
+                        if ((int)selectedItem.Tag == Main.Positions.FirstOrDefault(x => x.Id == _thisEmployee.PositionId).
+                        DepartamentId)
+                        { 
+                            ComboBoxItem dirItem = new ComboBoxItem() // Добавление сотрудников в комбобокс директоров
+                            {
+                                Tag = dir.Id,
+                                Content = dir.FullName,
+                            };
+                            DirectorComboBox.Items.Add(dirItem);
+                        }
+                    }
+                    foreach (ComboBoxItem item in DirectorComboBox.Items)
+                    {
+                        if ((int)item.Tag == _thisEmployee.DirectorId)
+                        {
+                            DirectorComboBox.SelectedItem = item;
+                        }
+                    }
+                }
+                if (_thisEmployee.AssistantId != null)
+                {
+                    foreach (var assistant in Main.Employees)
+                    {
+                        if (assistant.FullName == _thisEmployee.FullName)
+                        {
+                            return;
+                        }
+                        ComboBoxItem selectedItem = (ComboBoxItem)DepartmentComboBox.SelectedItem;
+                        if ((int)selectedItem.Tag == Main.Positions.FirstOrDefault(x => x.Id == assistant.PositionId).
+                        DepartamentId)
+                        {
+                            ComboBoxItem assItem = new ComboBoxItem() // Добавление сотрудников в комбобокс помощников
+                            {
+                                Tag = assistant.Id,
+                                Content = assistant.FullName,
+                            };
+                            AssistantComboBox.Items.Add(assItem);
+                        }
+                    }
+                    foreach (ComboBoxItem item in AssistantComboBox.Items)
+                    {
+                        if ((int)item.Tag == _thisEmployee.AssistantId)
+                        {
+                            AssistantComboBox.SelectedItem = item;
+                        }
+                    }
+                }
+            }
+        }
+        private void LoadData()
+        {
+            allAbsences.Clear();
+            foreach (Models.Absences abs in Main.Absences)
+            {
+                allAbsences.Add(abs);
+            }
+            UpdateListViews(allAbsences);
+        }
+        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (String.IsNullOrEmpty(FullNameTextBox.Text))
+            {
+                MessageBox.Show("Пустые или некорректные данные о ФИО!");
+                return;
+            }
+            if (String.IsNullOrEmpty(BirthDatePicker.Text))
+            {
+                MessageBox.Show("Пустые или некорректные данные о Дате рождении!");
+                return;
+            }
+            if (DepartmentComboBox.SelectedIndex == -1)
+            {
+                MessageBox.Show("Пустые или некорректные данные об подразделении!");
+                return;
+            }
+            if (String.IsNullOrEmpty(PositionTextBox.Text))
+            {
+                MessageBox.Show("Пустые или некорректные данные о должности!");
+                return;
+            }
+            if (String.IsNullOrEmpty(WorkPhoneTextBox.Text))
+            {
+                MessageBox.Show("Пустые или некорректные данные о рабочем телефоне!");
+                return;
+            }
+            if (String.IsNullOrEmpty(EmailTextBox.Text))
+            {
+                MessageBox.Show("Пустые или некорректные данные о Email!");
+                return;
+            }
+            if (String.IsNullOrEmpty(OfficeTextBox.Text))
+            {
+                MessageBox.Show("Пустые или некорректные данные об кабинете!");
+                return;
+            }
+            if (_thisEmployee != null) // Если редактируем сотрудника, обновляем его данные
+            {
+                try
+                {
+                    ApiContext apiContext = new ApiContext();
+                    _thisEmployee.FullName = FullNameTextBox.Text;
+                    _thisEmployee.BirthDate = BirthDatePicker.SelectedDate.Value;
+                    Models.Position redactPosition = Main.Positions.FirstOrDefault(x => x.Id == _thisEmployee.PositionId);
+                    redactPosition.Name = PositionTextBox.Text;
+                    ComboBoxItem selectedDepartamentItem = (ComboBoxItem)DepartmentComboBox.SelectedItem;
+                    redactPosition.DepartamentId = (int)selectedDepartamentItem.Tag;
+                    apiContext.PutPosition(redactPosition);
+                    _thisEmployee.PositionId = redactPosition.Id;
+                    _thisEmployee.WorkPhone = WorkPhoneTextBox.Text;
+                    _thisEmployee.MobilePhone = MobilePhoneTextBox.Text;
+                    _thisEmployee.Email = EmailTextBox.Text;
+                    _thisEmployee.Office = OfficeTextBox.Text;
+                    if (DirectorComboBox.SelectedIndex != -1) 
+                    {
+                        ComboBoxItem selectedDirectorItem = (ComboBoxItem)DirectorComboBox.SelectedItem;
+                        _thisEmployee.DirectorId = (int)selectedDepartamentItem.Tag;
+                    }
+                    if (AssistantComboBox.SelectedIndex != -1)
+                    {
+                        ComboBoxItem selectedAssistantItem = (ComboBoxItem)AssistantComboBox.SelectedItem;
+                        _thisEmployee.AssistantId = (int)selectedAssistantItem.Tag;
+                    }
+                    apiContext.PutEmployee(_thisEmployee);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+            else
+            {
+                try // Добавление нового сотрудника
+                {
+                    ApiContext apiContext = new ApiContext();
+                    Models.Employee newEmployee = new Models.Employee();
+                    newEmployee.FullName = FullNameTextBox.Text;
+                    newEmployee.BirthDate = BirthDatePicker.SelectedDate.Value;
+                    Models.Position newPosition = new Position();
+                    newPosition.Name = PositionTextBox.Text;
+                    ComboBoxItem selectedDepartamentItem = (ComboBoxItem)DepartmentComboBox.SelectedItem;
+                    newPosition.DepartamentId = (int)selectedDepartamentItem.Tag;
+                    Main.Positions.Add(newPosition);
+                    var newPositionId = apiContext.PostPosition(newPosition);
+                    newEmployee.PositionId = newPositionId.Id;
+                    newEmployee.WorkPhone = WorkPhoneTextBox.Text;
+                    newEmployee.MobilePhone = MobilePhoneTextBox.Text;
+                    newEmployee.Email = EmailTextBox.Text;
+                    newEmployee.Office = OfficeTextBox.Text;
+                    if (DirectorComboBox.SelectedItem != null || AssistantComboBox.SelectedItem != null)
+                    {
+                        ComboBoxItem selectedDirectorItem = (ComboBoxItem)DirectorComboBox.SelectedItem;
+                        newEmployee.DirectorId = (int)selectedDepartamentItem.Tag;
+                        ComboBoxItem selectedAssistantItem = (ComboBoxItem)AssistantComboBox.SelectedItem;
+                        newEmployee.AssistantId = (int)selectedAssistantItem.Tag;
+                    }
+                    Main.Employees.Add(newEmployee);
+                    apiContext.PostEmployee(newEmployee);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+            MainWindow.init.frame.Navigate(new Pages.Main());
+        }
+        private void BackButton_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow.init.frame.Navigate(new Pages.Main());
+        }
+        private void DepartmentComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            DirectorComboBox.Items.Clear();
+            AssistantComboBox.Items.Clear();
+            if (DepartmentComboBox.SelectedItem is not ComboBoxItem selectedItem) return;
+            int selectedDepartmentId = (int)selectedItem.Tag;
+            foreach (var employee in Main.Employees)
+            {
+                if (_thisEmployee != null && employee.Id == _thisEmployee.Id)
+                    continue;
+                int employeeDepId = Main.Positions.FirstOrDefault(x => x.Id == employee.PositionId)?.
+                DepartamentId ?? -1;
+                if (employeeDepId != selectedDepartmentId)
+                    continue;
+
+                ComboBoxItem directorItem = new ComboBoxItem
+                {
+                    Tag = employee.Id,
+                    Content = employee.FullName
+                };
+
+                ComboBoxItem assistantItem = new ComboBoxItem
+                {
+                    Tag = employee.Id,
+                    Content = employee.FullName
+                };
+
+                DirectorComboBox.Items.Add(directorItem);
+                AssistantComboBox.Items.Add(assistantItem);
+            }
+            if (_thisEmployee != null)
+            {
+                if (_thisEmployee.DirectorId != null)
+                {
+                    foreach (ComboBoxItem item in DirectorComboBox.Items)
+                    {
+                        if ((int)item.Tag == _thisEmployee.DirectorId)
+                        {
+                            DirectorComboBox.SelectedItem = item;
+                            break;
+                        }
+                    }
+                }
+                if (_thisEmployee.AssistantId != null)
+                {
+                    foreach (ComboBoxItem item in AssistantComboBox.Items)
+                    {
+                        if ((int)item.Tag == _thisEmployee.AssistantId)
+                        {
+                            AssistantComboBox.SelectedItem = item;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        private void UpdateListViews(IEnumerable&lt;Absences&gt; absences)// Для подставления в ListView данных о прогулах
+        {
+            TrainingsListView.Items.Clear();
+            AbsencesListView.Items.Clear();
+            VacationsListView.Items.Clear();
+            foreach (var trainingItem in absences.Where(x => x.EmployeeId == _thisEmployee.Id &&
+            x.Type == AbsenceType.обучение).ToList())
+            {
+                TrainingsListView.Items.Add(trainingItem);
+            }
+            foreach (var absenceItem in absences.Where(x => x.EmployeeId == _thisEmployee.Id &&
+            x.Type == AbsenceType.отгул ||
+            x.Type == AbsenceType.отсутствие).ToList())
+            {
+                AbsencesListView.Items.Add(absenceItem);
+            }
+            foreach (var vacationItem in absences.Where(x => x.EmployeeId == _thisEmployee.Id &&
+            x.Type == AbsenceType.отпуск).ToList())
+            {
+                VacationsListView.Items.Add(vacationItem);
+            }
+        }
+
+        private void FilterPastEvents(object sender, RoutedEventArgs e)
+        {
+            var now = DateTime.Now;
+            UpdateListViews(allAbsences.Where(a => a.EmployeeId == _thisEmployee.Id && a.EndDate &lt; now));
+        }
+
+        private void FilterCurrentEvents(object sender, RoutedEventArgs e)
+        {
+            var now = DateTime.Now;
+            UpdateListViews(allAbsences.Where(a => a.EmployeeId == _thisEmployee.Id && a.StartDate &lt;= now &&
+            a.EndDate >= now));
+        }
+
+        private void FilterFutureEvents(object sender, RoutedEventArgs e)
+        {
+            var now = DateTime.Now;
+            UpdateListViews(allAbsences.Where(a => a.EmployeeId == _thisEmployee.Id && a.StartDate > now));
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow.init.frame.Navigate(new Pages.AbsencePage(null, _thisEmployee));
+        }
+
+        private void TrainingsListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (TrainingsListView.SelectedItem is Absences selectedItem)
+            {
+                MainWindow.init.frame.Navigate(new Pages.AbsencePage(selectedItem, _thisEmployee));
+            }
+        }
+
+        private void AbsencesListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (AbsencesListView.SelectedItem is Absences selectedItem)
+            {
+                MainWindow.init.frame.Navigate(new Pages.AbsencePage(selectedItem, _thisEmployee));
+            }
+        }
+
+        private void VacationsListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (VacationsListView.SelectedItem is Absences selectedItem)
+            {
+                MainWindow.init.frame.Navigate(new Pages.AbsencePage(selectedItem, _thisEmployee));
+            }
+        }
+    </code></pre>
+
+    <p>Интерфейс страницы карточки сотрудника показан на рисунке 3 ниже.</p>
+
+    <div class="screenshot">
+        <img src="~/data/img/session2/employee.png" alt="Интерфейс страницы карточки сотрудника Employee">
+        <p>Рис. 3. Интерфейс страницы Employee</p>
+    </div>
+
+    <p>Код страницы для добавления и редактирования информации о пропусках и обучениях реализуется по аналогии.</p>
+</div>
+
+<h2>3. Разработка процедур базы данных</h2>
+<p>Для увольнения и удаления сотрудников по заданию, есть возможность создать процедуры в БД, для более удобной и производительной работы.</p>
+
+<div class="step">
+    <h3>3.1. Создание процедур</h3>
+    <p>Ниже представлены две процедуры для работы с данными сотрудников:</p>
+    <pre><code>
+CREATE DEFINER=`root`&#064;`%` PROCEDURE `TerminateEmployee`(IN employeeId INT)
+BEGIN
+    IF (SELECT COUNT(*) FROM absences WHERE employeeid = employeeId AND paid = TRUE AND enddate &gt;= CURDATE()) &gt; 0
+        THEN SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Ошибка: Сотрудник не может быть уволен, так как у него есть оплаченные обучения!';
+    END IF;
+    
+    DELETE FROM absences WHERE absences.employeeid = employeeId AND startdate &gt; CURDATE();
+    
+    UPDATE employees SET terminationdate = CURDATE() WHERE id = employeeId;
+END;
+    </code></pre>
+
+    <pre><code>
+CREATE DEFINER=`root`&#064;`%` PROCEDURE `DeleteEmployee`()
+BEGIN
+    DELETE FROM employees
+    WHERE terminationdate IS NOT NULL
+    AND terminationdate &lt;= DATE_SUB(CURDATE(), INTERVAL 30 DAY);
+END;
+    </code></pre>
+
+    <div class="note">
+        <p>Не забываем обновить SQL-скрипт и закинуть его в систему контроля версий. Все разработки проверяются <strong>СТРОГО</strong> в удаленном репозитории.</p>
+    </div>
+    <pre>
+        <code>
+            git add Designer
+            git commit -m "Update SQL-script"
+            git push -u origin master
+        </code>
+    </pre>
+</div>
+
+<div class="step">
+    <h3>3.2. Отправка разработанных модулей в систему контроля версий</h3>
+    <p>Отправьте Desktop-приложение в систему контроля версий: </p>
+    <pre>
+        <code>
+            git add BusinessDesktop
+            git commit -m "Added Desktop-app"
+            git push -u origin master
+        </code>
+    </pre>
+    <p>Либо через инструменты Visual Studio 2022, как это было описано в <a asp-page="/Sessions/Session1">Сессии 1</a>.</p>
+
+    <a href="~/data/documents/TestDesktop.zip" download>Ссылка на готовый Desktop-проект.</a>
+</div>

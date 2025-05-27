@@ -1,0 +1,24 @@
+﻿<Page x:Class="TestDesktop.Pages.AbsencePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:TestDesktop.Pages"
+      mc:Ignorable="d" 
+      d:DesignHeight="530" d:DesignWidth="900"
+      Title="AbsencePage">
+
+    <Grid Background="White" Margin="20" Grid.Column="0">
+        <TextBlock Grid.Column="0" Text="Начальная дата:" Margin="10,10,10,10" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+        <DatePicker Name="StartDateDatePicker" Width="200" Margin="10,30,10,10" VerticalAlignment="Top" HorizontalAlignment="Left" Grid.Column="0" />
+        <TextBlock Text="Конечная дата:" Margin="10,60,10,10" VerticalAlignment="Top" HorizontalAlignment="Left" Grid.Column="0" />
+        <DatePicker Name="EndDateDatePicker" Width="200" Margin="10,80,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="0" />
+        <TextBlock Grid.Column="0" Text="Тип пропуска:" Margin="10,110,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+        <ComboBox Name="AbsenceTypeCmbx" Width="200" Margin="10,130,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" SelectionChanged="AbsenceTypeCmbx_SelectionChanged"/>
+        <TextBlock Text="Описание: " Margin="10,160,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+        <TextBox Name="DescriptionTextBox" Margin="10,180,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Height="60" Width="200" TextWrapping="Wrap"/>
+        <CheckBox Name="PaidCheckBox" Content="Оплачено" Margin="10,250,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" IsEnabled="False"/>
+        <Button Content="↩️" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="50" Height="50" Margin="0,0,70,10" Click="BackButton_Click" Grid.Column="1" />
+        <Button Content="🖋️" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="50" Height="50" Margin="0,0,10,10" Click="SaveButton_Click" Grid.Column="0" />
+    </Grid>
+</Page>

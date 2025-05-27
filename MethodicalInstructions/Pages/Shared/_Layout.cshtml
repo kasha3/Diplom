@@ -1,0 +1,30 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <header>
+        <h1>Методические указания</h1>
+        <nav>
+            <a asp-page="/Index">На главную</a>
+            <a asp-page="/Sessions/Session1">Сессия 1</a>
+            <a asp-page="/Sessions/Session2">Сессия 2</a>
+            <a asp-page="/Sessions/Session3">Сессия 3</a>
+            <a asp-page="/Sessions/Session4">Сессия 4</a>
+            <a asp-page="/Sessions/Session5">Сессия 5</a>
+            <a asp-page="/Sessions/Session6">Сессия 6</a>
+        </nav>
+    </header>
+    <main role="main">
+        @RenderBody()
+    </main>
+    <div class="footer">
+        <p>Программные модули реализованы в соответствии с предметной областью, описанной в конкурсном задании 2025 года.</p>
+        <p>&copy; Пермь, 2025</p>
+    </div>
+</body>
+</html>

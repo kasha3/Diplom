@@ -1,0 +1,569 @@
+﻿@page
+@{
+    ViewData["Title"] = "Сессия 1";
+}
+<h1 class="text-center mt-4">Методические указания – Сессия 1</h1>
+
+<p><strong>Тема:</strong> Разработка базы данных и API личного кабинета</p>
+
+<h2>Модули в рамках сессии</h2>
+<ul>
+    <li>Модуль “Управление персоналом”</li>
+    <li>Модуль “Единая библиотека корпоративных данных”</li>
+    <li>Модуль “Узлы структурных подразделений компании”</li>
+    <li>Модуль “Личный кабинет”</li>
+</ul>
+
+<h2>1. Разработка базы данных</h2>
+<p>Для выбранной СУБД MySQL требуется реализовать структуру данных для модуля "Управление персоналом", который позволяет выполнять четыре функции:</p>
+<ul>
+    <li>Ведение и просмотр корпоративного справочника работников</li>
+    <li>Планирование и получение информации по обучениям</li>
+    <li>Ведение календаря временного отсутствия работников</li>
+    <li>Ведение поиска и подбора персонала</li>
+</ul>
+<p><strong>Примерные таблицы:</strong> Employees, Departments, Positions, и т.д.</p>
+
+<div class="step">
+    <h3>1.1. Запуск MySQL Workbench и подключение к серверу</h3>
+    <ol>
+        <li>Запустите программу MySQL Workbench.</li>
+        <li>В главном окне выберите существующее подключение к серверу MySQL или создайте новое.</li>
+        <li>Нажмите на выбранное подключение, чтобы установить соединение с сервером.</li>
+    </ol>
+
+    <div class="screenshot">
+        <img src="~/data/img/session1/MySQL_Workbench_Mainscreen_Windows.gif" alt="Главное окно MySQL Workbench">
+        <p>Рис. 1. Главное окно MySQL Workbench</p>
+    </div>
+</div>
+
+<div class="step">
+    <h3>1.2. Создание новой базы данных</h3>
+    <ol>
+        <li>После подключения к серверу в верхней панели инструментов нажмите кнопку "Create a new schema in the connected server" (значок с желтой цилиндрической иконкой).</li>
+        <li>В открывшемся диалоговом окне введите имя базы данных, например "BusinessDB".</li>
+        <li>Оставьте настройки кодировки по умолчанию (обычно utf8mb4) и сравнения (collation) utf8mb4_0900_ai_ci.</li>
+        <li>Нажмите кнопку "Apply".</li>
+        <li>В открывшемся окне скрипта нажмите "Apply" еще раз, затем "Finish".</li>
+    </ol>
+
+    <div class="code-block">
+        CREATE SCHEMA `BusinessDB` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+    </div>
+
+    <div class="note">
+        <strong>Примечание:</strong> В MySQL понятия "schema" (схема) и "database" (база данных) являются синонимами.
+    </div>
+</div>
+
+<div class="step">
+    <h3>1.3. Создание таблиц с помощью графического интерфейса</h3>
+    <h3>Создание таблицы "employees"</h3>
+    <ol>
+        <li>В навигаторе (левом боковом меню) разверните только что созданную базу данных.</li>
+        <li>Правой кнопкой мыши щелкните по папке "Tables" и выберите "Create Table".</li>
+        <li>Введите имя таблицы: "employees".</li>
+        <li>
+            Добавьте столбцы с указанием их типов и атрибутов:
+            <ul>
+                <li>id: INT, PK (первичный ключ), NN (NOT NULL), AI (Auto Increment)</li>
+                <li>positionid: INT, NN</li>
+                <li>fullname: VARCHAR(255), NN</li>
+                <li>birthdate: DATE, NN</li>
+                <li>workphone: VARCHAR(20), NN</li>
+                <li>office: VARCHAR(10), NN</li>
+                <li>email: VARCHAR(255), NN</li>
+                <li>mobilephone: VARCHAR(20), Default Null</li>
+                <li>directorid: INT, Default Null</li>
+                <li>assistantid: INT, Default Null</li>
+                <li>terminationdate: DATE, Default Null</li>
+            </ul>
+        </li>
+        <li>Нажмите кнопку "Apply", затем подтвердите создание таблицы.</li>
+    </ol>
+    <p>Таблица employees (сотрудников) имеет: код, код должности, ФИО, дату рождения, рабочий телефон, мобильный телефон, кабинет, электронную почту, код директора, код помощника, дату увольнения.</p>
+    <div class="code-block">
+        CREATE TABLE `employees` (
+        `id` int NOT NULL AUTO_INCREMENT,
+        `positionid` int NOT NULL,
+        `fullname` varchar(255) NOT NULL,
+        `birthdate` date NOT NULL,
+        `workphone` varchar(20) NOT NULL,
+        `office` varchar(10) NOT NULL,
+        `email` varchar(255) NOT NULL,
+        `mobilephone` varchar(20) DEFAULT NULL,
+        `directorid` int DEFAULT NULL,
+        `assistantid` int DEFAULT NULL,
+        `terminationdate` date DEFAULT NULL,
+        PRIMARY KEY (`id`));
+    </div>
+</div>
+<div class="step">
+    <h3>1.4. Создание остальных таблиц по аналогии</h3>
+    <p>Создайте остальные таблицы с помощью графических инструментов MySQL Workbench. База данных должна включать следующие таблицы:</p>
+    </ul>
+    <li>absences (отсутствий и отпусков сотрудников): код (int), код сотрудника (int), начальная и конечная дата (DATE), тип прогула (enum), описание (varchar), оплачиваемый или нет отпуск (tinyint);</li>
+        <li>candidates (резюме кандидатов): код (int), ФИО (varchar), желаемая должность (varchar), дата отклика (DATE), текст резюме (text), электронная почта (varchar), телефон (varchar), текст навыков (text);</li>
+        <li>comments (комментариев к документу): код (int), код документа (int), текст комментария (varchar / text), дата создания (DATE), дата редактирования (DATE), ФИО автора (varchar), должность (varchar);</li>
+        <li>departaments (подразделений): код (int), код организации (int), название (varchar), описание (varchar), код руководителя (int);</li>
+        <li>documents (документов организации): код (int), заголовок (varchar/text), дата создания (DATE), дата редактирования (DATE), категория документа (varchar), наличие комментариев (tinyint);</li>
+        <li>events (событий): код (int), название (varchar), дата (date), код автора (сотрудника) (int), описание (varchar), код типа события (int), код статуса события (int);</li>
+        <li>eventStatuses (статусов событий): код (int), название статуса (varchar);</li>
+        <li>eventTypes (типов событий): код (int), название (varchar), описание (varchar);</li>
+        <li>materials (материалов): код (int), название (varchar), дата утверждения (date), дата модификации (date), статус (varchar), тип (varchar), область (varchar), код автора (int);</li>
+        <li>news (новостей): код (int), название (varchar), дата новости (date), описание (varchar), изображение (varchar), количество лайков и дизлайков (tinyint / int);</li>
+        <li>organizations (организаций): код (int), название (varchar);</li>
+        <li>positions (должностей): код (int), код подразделения (int), название (varchar);</li>
+        <li>Users (пользователей): код (int), логин (varchar), пароль (varchar);</li>
+    <ul>
+</div>
+<div class="step">
+    <h3>1.5. Импортируйте SQL-скрипт создания таблицы WorkingCalendar</h3>
+    <p>Выполните импорт данных из предоставленных файлов в созданные таблицы базы данных без потери данных</p>
+    <ol>
+        <li>Откройте MySQL Workbench</li>
+        <li>Откройте проводник и найдите SQL-файл</li>
+        <li>Перетащите файл в окно MySQL Workbench</li>
+        <li>Файл откроется в новой вкладке редактора</li>
+        <li>Выполните скрипт, нажатием клавиши Execute.</li>
+    </ol>
+    <p>При этом, у вас должна быть выбрана база данных слева в меню (подчеркиваться жирным шрифтом).</p>
+</div>
+
+<div class="step">
+    <h3>1.6. Создание внешних ключей между таблицами</h3>
+    <p>После создания всех таблиц необходимо установить связи между ними с помощью внешних ключей. Для этого выполните следующие действия в MySQL Workbench:</p>
+    <ol>
+        <li>Переключитесь во вкладку <strong>Model</strong>, если вы работаете в режиме моделирования (или используйте графическое представление таблиц).</li>
+        <li>Выберите инструмент <strong>Relationship</strong> (иконка с ключом и стрелкой), который находится на панели инструментов сверху.</li>
+        <li>Кликните сначала по таблице, содержащей внешний ключ (дочерняя таблица), затем по таблице, на которую ссылается внешний ключ (родительская таблица).</li>
+        <li>Откроется окно настройки связи. Убедитесь, что в поле <strong>Foreign Key</strong> указано правильное имя (например, <code>fk_absences_employee</code>).</li>
+        <li>В разделе <strong>Column Mapping</strong> выберите поля для связи, например: <code>absences.employee_id</code> → <code>employees.id</code>.</li>
+        <li>Нажмите <strong>OK</strong> для сохранения связи.</li>
+        <li>
+            Повторите эти действия для всех нужных таблиц. Примеры связей:
+            <ul>
+                <li><code>absences.employee_id</code> → <code>employees.id</code></li>
+                <li><code>comments.documentid</code> → <code>documents.id</code></li>
+                <li><code>departaments.organizationid</code> → <code>organizations.id</code></li>
+                <li><code>departaments.managerid</code> → <code>employees.id</code></li>
+                <li><code>events.typeid</code> → <code>eventTypes.id</code></li>
+                <li><code>events.statusid</code> → <code>eventStatuses.id</code></li>
+                <li><code>materials.authorid</code> → <code>employees.id</code></li>
+                <li><code>positions.departamentid</code> → <code>departaments.id</code></li>
+                <li><code>employees.positionid</code> → <code>positions.id</code></li>
+                <li><code>employees.directorid</code> → <code>employees.id</code></li>
+                <li><code>employees.assistantid</code> → <code>employees.id</code></li>
+            </ul>
+        </li>
+        <li>После добавления всех внешних ключей сохраните модель (Ctrl+S) и при необходимости синхронизируйте с базой данных (Database > Synchronize Model).</li>
+        <div class="screenshot">
+            <img src="~/data/img/session1/ER_diagram.png" alt="Главное окно MySQL Workbench">
+            <p>Рис. 2. ER-диаграмма базы данных</p>
+        </div>
+    </ol>
+    <div class="note"><strong>Важно:</strong> убедитесь, что все типы данных совпадают у связанных полей (например, оба поля должны быть <code>INT</code>), и что родительские таблицы уже существуют перед добавлением внешних ключей.</div>
+</div>
+
+<div class="step">
+    <h3>1.7. Импортирование данных в таблицы из Excel файла</h3>
+    <p>По заданию дан файл для импорта, с такими данными, как: организации, подразделения, должности, сотрудники.</p>
+    <p>Импортируем все данные (по возможности) в нужные таблицы: информацию об организациях → organizations, подразделениях → departaments, должности → positions, сотрудники → employees.</p>
+</div>
+
+<div class="step">
+    <h3>1.8. Добавление тестовых данных в таблицы базы данных</h3>
+    <p>После того, как добавили все таблицы, импортировали все данные, добавьте по 3-5 тестовых строк в каждую, если это необходимо.</p>
+</div>
+
+<div class="step">
+    <h3>1.9. Создание PDF-документа структуры БД (ER-диаграммы)</h3>
+    <p>Функция Reverse Engineer позволяет автоматически анализировать существующую базу данных и создавать ее графическое представление, которое можно экспортировать в PDF.</p>
+    <ol>
+        <li>В главном меню MySQL Workbench выберите <strong>Database → Reverse Engineer... (Ctrl + R)</strong></li>
+        <li>В открывшемся мастере нажмите <strong>Next</strong></li>
+        <li>Выберите подключение к вашей БД и нажмите <strong>Next</strong></li>
+        <li>Введите пароль если требуется и нажмите <strong>Next</strong></li>
+        <li>На этапе выбора схемы отметьте вашу базу данных и нажмите <strong>Next</strong></li>
+        <li>Дождитесь завершения процесса реверс-инжиниринга (MySQL Workbench проанализирует структуру БД)</li>
+        <li>Нажмите <strong>Next</strong>, затем <strong>Execute</strong></li>
+        <li>По завершении нажмите <strong>Finish</strong></li>
+    </ol>
+
+    <a href="https://dev.mysql.com/doc/workbench/en/wb-reverse-engineer-live.html">Ссылка на мануал по Reverse Engineer</a>
+
+    <div class="screenshot">
+        <img src="~/data/img/session1/Reverse Engineer.png" alt="Мастер Reverse Engineer">
+        <p>Рис. 3. Мастер Reverse Engineer</p>
+    </div>
+</div>
+
+<div class="step">
+    <h3>1.10. Создание SQL-скрипта создания базы данных</h3>
+    <ol>
+        <li>В меню выбираем Server → Data Export</li>
+        <li>В левой колонке выбираем необходимую для экспорта БД</li>
+        <li>Ставим галочку напротив нее</li>
+        <li>В правой колонке проверяем, что выбрались все таблицы</li>
+        <li>Нажимаем Export to Self-Contained File и выбираем путь сохранения SQL-скрипта</li>
+        <li>Опционально: Include Create Schema (позволяет через скрипт создать еще и БД)</li>
+        <li>Нажимает Start Export</li>
+    </ol>
+
+    <a href="~/data/documents/sql_file.zip" download>Ссылка на готовый файл SQL-скрипта</a>
+</div>
+
+<h2>2. Разработка API Личного кабинета</h2>
+<p>В данном разделе вы создадите защищённый API с использованием ASP.NET Core Web API (.NET 6) и токенов JWT. API будет включать следующие операции:</p>
+<ul>
+    <li>Авторизация пользователя – <code>POST /api/v1/SignIn</code></li>
+    <li>Получение списка документов – <code>GET /api/v1/Documents</code></li>
+    <li>Работа с комментариями к документу – <code>GET/POST /api/v1/Document/{documentId}/Comments</code></li>
+</ul>
+
+<div class="step">
+    <h3>2.1. Создание проекта API в Visual Studio 2022</h3>
+    <ol>
+        <li>Откройте <strong>Visual Studio 2022</strong>.</li>
+        <li>Выберите пункт <strong>Create a new project</strong>.</li>
+        <li>В поиске шаблонов найдите и выберите <strong>ASP.NET Core Web API</strong>. Нажмите <strong>Next</strong>.</li>
+        <li>Введите имя проекта, например <code>BusinessAPI</code>, и выберите папку для сохранения. Нажмите <strong>Next</strong>.</li>
+        <li>В разделе <strong>Framework</strong> выберите <strong>.NET 6.0 (Long-term support)</strong>.</li>
+        <li>Оставьте галочку в пункте <strong>Enable OpenAPI support</strong>, нам необходимо использовать Swagger.</li>
+        <li>Нажмите <strong>Create</strong>.</li>
+    </ol>
+    <p>После создания проекта структура будет включать папки <code>Controllers</code>, <code>Program.cs</code>, <code>appsettings.json</code> и другие.</p>
+</div>
+
+<div class="step">
+    <h3>2.2. Настройка модели данных</h3>
+    <p>Добавьте классы моделей, например <code>Document</code>, <code>Comment</code> и <code>User</code> в папку <code>Models</code>:</p>
+    <pre>
+public class Document
+{
+    public int Id { get; set; } // Идентификатор документа
+    public string? Title { get; set; } // Заголовок документа
+    public DateTime DateCreated { get; set; } // Дата создания
+    public DateTime DateUpdated { get; set; } // Дата редактирования
+    public string? Category { get; set; } // Категория
+    public bool HasComments { get; set; } // Содержит ли комментарии
+}
+    </pre>
+    <pre>
+public class Comment
+{
+    public int Id { get; set; } // Идентификатор
+    public int DocumentId { get; set; } // Код документа
+    public string? Text { get; set; } // Текст
+    public DateTime DateCreated { get; set; } // Дата создания
+    public DateTime DateUpdated { get; set; } // Дата редактирования
+    public string? AuthorName { get; set; } // Автор
+    public string? AuthorPosition { get; set; } // Должность
+}
+    </pre>
+    <pre>
+public class User
+{
+    public int Id { get; set; } // Идентификатор
+    public string? Name { get; set; } // Логин
+    public string? Password { get; set; } // Пароль
+}
+    </pre>
+</div>
+
+<div class="step">
+    <h3>2.3. Создание контроллеров API</h3>
+    <p>В папке <code>Controllers</code> создайте контроллеры: <code>AuthController.cs</code>, <code>DocumentsController.cs</code>, <code>CommentsController.cs</code>.</p>
+    <p>Пример маршрута авторизации:</p>
+    <pre>
+[ApiController]
+[Route("api/v1/signIn")]
+public class AuthController : ControllerBase
+{
+    private readonly AppDbContext _db; //Контекст базы данных, ниже будет описано его создание
+    private readonly IConfiguration _configuration; 
+    public AuthController(AppDbContext db, IConfiguration configuration) {
+        _db = db;
+        _configuration = configuration;
+    }
+
+    [HttpPost]
+    public IActionResult Login([FromForm]string userName = "", [FromForm] string password = "")
+    {
+        // логика авторизации и генерация JWT
+        // пример:
+        var dbUser = _db.Users.FirstOrDefault(u => u.Name == userName && u.Password == password); // поиск пользователя в БД
+        if (dbUser == null) return Unauthorized(); // не найден выдать 401 ошибку
+        var token = GenerateJwtToken(userName); // иначе перейти к методу выдачи токена
+        return Ok(new { Token = token } ); // запрос вернет токен
+    }
+}
+    </pre>
+
+    <p>Генерация и выдача токена по примеру Bearer, будет описана в пунктах ниже.</p>
+</div>
+
+<div class="step">
+    <h3>2.4. Подключение Entity Framework Core</h3>
+    <ol>
+        <li>
+            Добавьте в проект NuGet-пакеты:
+            <ul>
+                <li><code>Microsoft.EntityFrameworkCore</code></li>
+                <li><code>Microsoft.EntityFrameworkCore.Design</code></li>
+                <li><code>Pomelo.EntityFrameworkCore.MySql</code> (для MySQL)</li>
+                <li><code>Microsoft.AspNetCore.Authentication.JwtBearer</code> (для Bearer токена)</li>
+                <li><code>Swashbuckle.AspNetCore</code> (для Swagger)</li>
+            </ul>
+        </li>
+        <li>Создайте класс - контекст <code>AppDbContext</code> в папке <code>Models</code>, для работы с таблицами базы данных:</li>
+    </ol>
+    <pre>
+public class AppDbContext : DbContext
+    {
+        public AppDbContext(DbContextOptions<AppDbContext> options)
+            :base(options) { }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Document> Documents { get; set; }
+        public DbSet<Comment> Comments { get; set; }
+    }
+    </pre>
+    <ol start="3">
+        <li>Зарегистрируйте контекст в <code>Program.cs</code>:</li>
+    </ol>
+    <pre>
+builder.Services.AddDbContext&lt;AppDbContext&gt;(options =>
+    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
+                     ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))));
+    </pre>
+</div>
+
+<div class="step">
+    <h3>2.5. Настройка аутентификации JWT</h3>
+    <p>Добавьте настройку JWT в <code>Program.cs</code>:</p>
+    <pre>
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+    };
+    options.Events = new JwtBearerEvents
+    {
+        OnAuthenticationFailed = context =>
+        {
+            Console.WriteLine($"Authentication failed: {context.Exception.Message}");
+            return Task.CompletedTask;
+        },
+        OnTokenValidated = context =>
+        {
+            Console.WriteLine($"Token validated for: {context.Principal.Identity.Name}");
+            return Task.CompletedTask;
+        }
+    };
+});
+    </pre>
+    <p>Не забудьте вызвать <code>app.UseAuthentication();</code> и <code>app.UseAuthorization();</code> в <code>Program.cs</code>.</p>
+    <p>В файле <code>appsettings.json</code> пропишите Key, Issuer, Audience.</p>
+    <pre>
+          "Jwt": {
+    "Key": "its_mine_super_secret_key_here_for_test_api",
+    "Issuer": "i_am_an_issuer",
+    "Audience":  "i_am_an_audience"
+  }
+    </pre>
+</div>
+
+<div class="step">
+    <h3>2.6. Настройка Swagger</h3>
+    <p>Для визуального просмотра всех <strong>REST API</strong> запросов необходимо прописать настройки страницы swagger, в том же файле <code>Program.cs</code> :</p>
+    <pre>
+        builder.Services.AddSwaggerGen(c =>
+        {
+        c.SwaggerDoc("v1", new OpenApiInfo { Title = "TestAPI", Version = "v1" });
+        c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Введите токен, полученный после авторизации"
+        });
+        var basePath = AppContext.BaseDirectory;
+        var xml = Path.Combine(basePath, "TestApi.xml"); // Генерация XML документации
+        c.IncludeXmlComments(xml);
+        c.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {
+        {
+        new OpenApiSecurityScheme
+        {
+        Reference = new OpenApiReference
+        {
+        Type = ReferenceType.SecurityScheme,
+        Id = "Bearer"
+        }
+        },
+        new string[] {}
+        }
+        });
+        });
+    </pre>
+</div>
+
+<div class="step">
+    <h3>2.7. Генерация токена</h3>
+    <p>Метод для генерации токена Bearer необходимо добавить в контроллере <code>AuthController.cs</code> :</p>
+    <pre>
+private string GenerateJwtToken(string username)
+{
+    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"])); // Берем ключ из файла
+    var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256); // Используем алгоритм шифрования HmacSha256
+    var token = new JwtSecurityToken( // генерируем токен
+    issuer: _configuration["Jwt:Issuer"],
+    audience: _configuration["Jwt:Audience"],
+    claims: new[] { new Claim(ClaimTypes.Name, username) },
+    expires: DateTime.Now.AddMinutes(30), // жизнь токена = 30 минут
+    signingCredentials: credentials
+    );
+    return new JwtSecurityTokenHandler().WriteToken(token); // возвращаем токен в виде строки
+}
+    </pre>
+</div>
+
+<div class="step">
+    <h3>2.8. Реализация оставшихся контроллеров</h3>
+    <p>Осталось дописать запросы для контроллеров <code>CommentsController.cs</code> и <code>DocumentsController.cs</code> :</p>
+    <pre>
+    [Route("api/v1/document/{documentId}/comments")]
+    [ApiController]
+    public class CommentsController : ControllerBase
+    {
+        private readonly AppDbContext _db;
+        public CommentsController(AppDbContext db) { _db = db; }
+
+        [HttpGet]
+        [Authorize]
+        public IActionResult GetComments(int documentId)
+        {
+            var comments = _db.Comments.Where(c => c.DocumentId == documentId).ToList();
+            if (comments.Count == 0) return NotFound();
+            if (_db.Documents.Find(documentId).HasComments == false) return NotFound();
+            return comments.Any() ? Ok(comments) : NotFound(new { message = "Не найдены комментарии для документа" });
+        }
+
+        [HttpPost]
+        [Authorize]
+        public IActionResult AddComment(int documentId, [FromBody] Comment comment)
+        {
+            comment.DocumentId = documentId;
+            _db.Comments.Add(comment);
+            _db.SaveChanges();
+            return Ok(comment);
+        }
+    }
+
+    [Route("api/v1/documents")]
+    [ApiController]
+    public class DocumentsController : ControllerBase
+    {
+        private readonly AppDbContext _db;
+        public DocumentsController(AppDbContext db) { _db = db; }
+        [HttpGet]
+        [Authorize]
+        public IActionResult GetDocuments() => Ok(_db.Documents.ToList());
+    }
+    </pre>
+</div>
+
+<div class="step">
+    <h3>2.9. Реализация Postman-коллекции</h3>
+    <p>Для проверки работы созданного API рекомендуется использовать инструмент <strong>Postman</strong>. Ниже представлены шаги по созданию Postman-коллекции и примеры запросов.</p>
+
+    <ol>
+        <li>Откройте <strong>Postman</strong> и нажмите кнопку <strong>New</strong> → <strong>Collection</strong>.</li>
+        <li>Назовите коллекцию, например: <code>PersonalCabinet API</code>.</li>
+        <li>Создайте внутри коллекции следующие запросы:</li>
+    </ol>
+
+    <ol start="1">Авторизация (POST /api/v1/SignIn)</ol>
+    <ul>
+        <li><strong>Method:</strong> POST</li>
+        <li><strong>URL:</strong> http://localhost:{порт}/api/v1/SignIn</li>
+        <li><strong>Body → raw → JSON:</strong></li>
+    </ul>
+    <pre>
+{
+  "login": "admin",
+  "password": "123456"
+}
+    </pre>
+    <p>При успешной авторизации вы получите JWT токен в ответе. Скопируйте его для использования в других запросах.</p>
+
+    <ol start="2">Получение документов (GET /api/v1/Documents)</ol>
+    <ul>
+        <li><strong>Method:</strong> GET</li>
+        <li><strong>URL:</strong> http://localhost:{порт}/api/v1/Documents</li>
+        <li><strong>Authorization:</strong> выберите <strong>Bearer Token</strong> и вставьте полученный токен JWT.</li>
+    </ul>
+
+    <ol start="3">Получение комментариев к документу (GET /api/v1/Document/{id}/Comments)</ol>
+    <ul>
+        <li><strong>Method:</strong> GET</li>
+        <li><strong>URL:</strong> http://localhost:{порт}/api/v1/Document/1/Comments</li>
+        <li><strong>Authorization:</strong> Bearer Token</li>
+    </ul>
+
+    <ol start="4">Добавление комментария (POST /api/v1/Document/{id}/Comments)</ol>
+    <ul>
+        <li><strong>Method:</strong> POST</li>
+        <li><strong>URL:</strong> http://localhost:{порт}/api/v1/Document/1/Comments</li>
+        <li><strong>Authorization:</strong> Bearer Token</li>
+        <li><strong>Body → raw → JSON:</strong></li>
+    </ul>
+    <pre>
+{
+  "text": "Полезный документ",
+  "authorName": "Иванов И.И.",
+  "authorPosition": "Инженер"
+}
+    </pre>
+
+    <p>Вы можете экспортировать созданную коллекцию через <strong>... (три точки) → Export</strong> и его необходимо потом отправить на Git.</p>
+
+    <div class="screenshot">
+        <img src="~/data/img/session1/postman.png" alt="Postman-коллекция">
+        <p>Рис. 4. Postman - коллекция</p>
+    </div>
+
+    <a href="~/data/documents/REST API basics- CRUD, test & variable.postman_collection.json" download>Ссылка на скачивание готовой коллекции</a>
+</div>
+    <h2>3. Отправка на удаленный репозиторий</h2>
+    <p>Созданный SQL-скрипт, ER-диаграмму в формате <code>.pdf</code> и Postman-коллекцию необходимо закинуть в одну папку <strong>Designer</strong></p>
+    <p>После чего, через командную строку отправляем папку в систему контроля версий: </p>
+    <pre>
+git init
+git status
+git add Designer
+git status //убедиться что закинули все содержимое папки
+git remote add origin http_ссылку_на_удаленный_репозиторий
+git commit -m "Comment"
+git push -u origin master
+    </pre>
+    <p>Проект c API, также отправляем через Visual Studio 2022 внизу справа окна приложения, нажимаем: <code>Добавить в систему управления версиями</code></p>
+    <p>Заполняем форму <code>Удаленный URl-адрес репозитория: </code> , проверяем отправку.</p>
+<div class="note">
+    <p>С API можно ознакомиться в готовом проекте <a asp-page="/Sessions/Session6">ознакомьтесь с готовым материалом</a> в конце страницы.</p>
+</div>

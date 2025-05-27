@@ -1,0 +1,165 @@
+html, body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    display: flex;
+    padding: 0;
+    flex-direction: column;
+}
+header {
+    background: #a0a3a5;
+    color: white;
+    padding: 20px 40px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+nav {
+    display: flex;
+    justify-content: center;
+}
+header h1 {
+    flex: 1;
+    text-align: center;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+nav a {
+    display: inline-block;
+    color: white;
+    margin-right: 15px;
+    text-decoration: none;
+}
+nav a:hover {
+    color: #ffcc00;
+}
+main {
+    padding: 20px;
+    background: white;
+    max-width: 960px;
+    margin: 20px auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+.important-links {
+    background-color: #f0f0f0;
+    padding: 20px;
+    margin-top: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.important-links h2 {
+    margin-top: 0;
+    color: #003366;
+}
+.important-links a {
+    color: #0066cc;
+    text-decoration: none;
+    font-weight: 500;
+}
+.important-links a:hover {
+    text-decoration: underline;
+}
+.introduction-requirements-grid {
+    margin-top: 30px;
+}
+.requirements-grid table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-family: Arial, sans-serif;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.requirements-grid table td {
+    padding: 10px 15px;
+    border-bottom: 1px solid #ddd;
+    vertical-align: top;
+}
+.sessions-grid h2 {
+    margin-bottom: 20px;
+    font-size: 1.6rem;
+    color: #333;
+}
+.card-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+.card {
+    flex: 1 1 calc(33.333% - 20px);
+    background: #f0f4ff;
+    padding: 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #003366;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+.card h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+.card p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #333;
+}
+.footer {
+    background: #a0a3a5;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    font-size: 14px;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+}
+/* ¡ÀŒ  ƒÀﬂ —≈——»» 1, 2, 3*/
+.code-block {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    font-family: monospace;
+    overflow-x: auto;
+    margin: 15px 0;
+}
+.note {
+    background-color: #e7f5fe;
+    border-left: 4px solid #3498db;
+    padding: 10px 15px;
+    margin: 15px 0;
+}
+.screenshot {
+    text-align: center;
+    margin: 20px 0;
+}
+.screenshot img {
+    max-width: 100%;
+    border: 1px solid #ddd;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+.step {
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+.step table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-family: Arial, sans-serif;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.step table td {
+    padding: 10px 15px;
+    border-bottom: 1px solid #ddd;
+    vertical-align: top;
+}
+/* ¿ƒ¿œ“»¬ÕŒ—“‹ */
+@media (max-width: 768px) {
+    .card {
+        flex: 1 1 100%;
+    }
+}

@@ -1,0 +1,66 @@
+﻿@page
+@model MethodicalInstructions.Pages.IndexModel
+@{
+    ViewData["Title"] = "Методические указания";
+}
+<h1>Методические указания по выполнению конкурсного задания по компетенции "Программные решения для бизнеса"</h1>
+<section class="important-links">
+    <h2>Полезные ссылки</h2>
+    <ul>
+        <li>
+            <a href="https://pro.firpo.ru/" target="_blank" rel="noopener noreferrer">
+                Официальный сайт чемпионата
+            </a>
+        </li>
+        <li>
+            <a href="~/data/documents/konkurs_task_2025.docx" download>
+                Скачать конкурсное задание за 2025 год (Word)
+            </a>
+        </li>
+        <li>
+            <a href="~/data/documents/КЗ_по-сессиям.zip" download>
+                Скачать архив конкурсного задания
+            </a>
+        </li>
+    </ul>
+</section>
+<section class="introduction-requirements-grid">
+    <div class="card-grid">
+        <a class="card" asp-page="/Sessions/Introduction">
+            <h3>Введение</h3>
+        </a>
+        <a class="card" asp-page="/Sessions/Requirements">
+            <h3>Требования и рекомендации</h3>
+        </a>
+    </div>
+</section>
+<h2>Выберите сессию для просмотра методических указаний:</h2>
+<section class="sessions-grid">
+    <h2>Список сессий</h2>
+    <div class="card-grid">
+        <a class="card" asp-page="/Sessions/Session1">
+            <h3>Сессия 1</h3>
+            <p>Разработка базы данных, API личного кабинета.</p>
+        </a>
+        <a class="card" asp-page="/Sessions/Session2">
+            <h3>Сессия 2</h3>
+            <p>Desktop-приложение: управление структурой и персоналом.</p>
+        </a>
+        <a class="card" asp-page="/Sessions/Session3">
+            <h3>Сессия 3</h3>
+            <p>Управление проектами и документооборот.</p>
+        </a>
+        <a class="card" asp-page="/Sessions/Session4">
+            <h3>Сессия 4</h3>
+            <p>Разработка Web-приложения.</p>
+        </a>
+        <a class="card" asp-page="/Sessions/Session5">
+            <h3>Сессия 5</h3>
+            <p>Разработка мобильного Android-приложения.</p>
+        </a>
+        <a class="card" asp-page="/Sessions/Session6">
+            <h3>Сессия 6</h3>
+            <p>Проектирование архитектуры системы, руководства пользователя, презентация</p>
+        </a>
+    </div>
+</section>

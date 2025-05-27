@@ -1,0 +1,1137 @@
+﻿@page
+@{
+    ViewData["Title"] = "Сессия 5";
+}
+<h1 class="text-center mt-4">Методические указания – Сессия 5</h1>
+
+<p><strong>Тема:</strong> Разработка мобильного и веб-приложения для отображения публичной информации</p>
+
+<h2>Модули в рамках сессии</h2>
+<ul>
+    <li>Модуль “Мобильное приложение”</li>
+    <li>Модуль “Общей корпоративной информации”</li>
+</ul>
+
+<h2>1. Разработка мобильного приложения</h2>
+<p>Необходимо создать мобильное приложение, отображающее публичную информацию о новостях и событиях.</p>
+
+<ul>
+    <li>На главной странице при запуске отображаются <strong>события</strong>.</li>
+    <li>События отображаются в <strong>отсортированном виде</strong> от новых к более ранним.</li>
+    <li>Для новостей используется <strong>слайдер</strong>.</li>
+    <li>Используется <strong>API</strong> для загрузки данных.</li>
+    <li>При нажатии на <strong>звездочку</strong>, выбранное <strong>событие</strong> добавляется в календарь.</li>
+</ul>
+
+<div class="step">
+    <h3>1.1. Запуск Android Studio и создание проекта</h3>
+    <p>Откройте Android Studio и создайте новый проект для разработки мобильного приложения.</p>
+    <ol>
+        <li>Запустите Android Studio.</li>
+        <li>На стартовом экране нажмите <strong>"New Project"</strong>.</li>
+        <li>Выберите шаблон <strong>"Empty Activity"</strong> и нажмите <strong>"Next"</strong>.</li>
+        <li>Укажите следующие примерные параметры:
+            <ul>
+                <li><strong>Name:</strong> Session5</li>
+                <li><strong>Package name:</strong> com.example.session5</li>
+                <li><strong>Save location:</strong> Укажите путь к папке проекта</li>
+                <li><strong>Language:</strong> Java</li>
+                <li><strong>Minimum SDK:</strong> API 31: Android 9.0</li>
+            </ul>
+        </li>
+        <li>Нажмите <strong>"Finish"</strong> и дождитесь полной загрузки проекта.</li>
+    </ol>
+</div>
+
+<div class="step">
+    <h3>1.2. Настройка зависимостей и подключение библиотек</h3>
+    <p>Откройте файл <code>build.gradle (Module: app)</code> и добавьте необходимые зависимости:</p>
+    <pre><code>
+dependencies {
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.google.code.gson:gson:2.8.9")
+    implementation("com.github.bumptech.glide:glide:4.12.0")
+    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("com.google.android.material:material:1.12.0")
+    implementation("androidx.constraintlayout:constraintlayout:2.2.0")
+    testImplementation("junit:junit:4.13.2")
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+}
+    </code></pre>
+    <p>После добавления зависимостей нажмите <strong>"Sync Now"</strong>, чтобы Gradle применил изменения о добавлении новых библиотек.</p>
+</div>
+
+<div class="step">
+    <h3>1.3. Создание макета главного экрана</h3>
+    <p>Откройте файл <code>activity_main.xml</code> и замените содержимое следующим кодом:</p>
+    <pre><code>
+&lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#78B24B"
+    android:orientation="vertical"
+    tools:context=".MainActivity"&gt;
+    &lt;LinearLayout
+        android:id="&#064;+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="20px"
+        android:gravity="center"
+        android:orientation="horizontal"&gt;
+        &lt;androidx.appcompat.widget.AppCompatButton
+            android:id="&#064;+id/EventBtn"
+            android:layout_width="400px"
+            android:layout_height="200px"
+            android:layout_marginRight="20px"
+            android:background="&#064;drawable/background_buttons"
+            android:text="События"
+            android:onClick="onEvents"
+            android:textColor="&#064;color/black">
+        &lt;/androidx.appcompat.widget.AppCompatButton>
+        &lt;androidx.appcompat.widget.AppCompatButton
+            android:id="&#064;+id/NewsBtn"
+            android:layout_width="400px"
+            android:layout_height="200px"
+            android:layout_marginLeft="20px"
+            android:background="&#064;drawable/background_buttons"
+            android:text="Новости"
+            android:onClick="onNews"
+            android:textColor="&#064;color/black"&gt;
+        &lt;/androidx.appcompat.widget.AppCompatButton&gt;
+    &lt;/LinearLayout&gt;
+    &lt;androidx.viewpager2.widget.ViewPager2
+        android:id="&#064;+id/viewpager2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintTop_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="&#064;id/events_list"/&gt;
+    &lt;androidx.recyclerview.widget.RecyclerView
+        android:id="&#064;+id/events_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintTop_toBottomOf="&#064;+id/linearLayout"/&gt;
+&lt;/LinearLayout&gt;
+    </code></pre>
+</div>
+
+<div class="step">
+    <h3>1.4. Создание config файла для работы с API</h3>
+    <p>
+        Необходимо создать в папке <code>xml</code> файл с названием <strong><code>network_security_config.xml</code></strong> с содержимым:
+    </p>
+    <pre>
+        <code>
+    &lt;network-security-config&gt;
+        &lt;domain-config cleartextTrafficPermitted="true"&gt;
+            &lt;domain includeSubdomains="true"&gt;192.168.0.108&lt;/domain&gt;
+        &lt;/domain-config&gt;
+    &lt;/network-security-config&gt;
+        </code>
+    </pre>
+
+    <p>Также в файле <code>AndroidManifest.xml</code> нужно прописать разрешение на интернет: <code>&lt;uses-permission android:name="android.permission.INTERNET"</code> и в тэге <code>application</code> прописать: <code>android:networkSecurityConfig="&#064;xml/network_security_config"</code> .</p>
+</div>
+
+<div class="step">
+    <h3>1.5. Создание моделей данных</h3>
+    <p>Создайте два класса: <code>NewsItem.java</code> и <code>EventItem.java</code>.</p>
+
+    <p><strong>NewsItem.java:</strong></p>
+    <pre><code>
+    public class NewsItem implements Serializable {
+        public int id;
+        public String name;
+        public String date;
+        public String description;
+        public String image;
+        public int likes;
+        public int dislikes;
+    }
+    </code></pre>
+
+    <p><strong>EventItem.java:</strong></p>
+    <pre><code>
+    public class EventItem {
+        public int id;
+        public String name;
+        public String date;
+        public String authorName;
+        public String description;
+        public boolean isAddedToCalendar = false;
+    }
+    </code></pre>
+</div>
+
+<div class="step">
+    <h3>1.6. Создание интерфейса API (Retrofit)</h3>
+    <p>Создайте интерфейс <code>IApiService.java</code> внутри пакета <code>session5</code>:</p>
+    <pre><code>
+    import java.util.List;
+    import retrofit2.Call;
+    import retrofit2.http.GET;
+
+    public interface IApiService {
+            &#064;GET("/api/v1/news")
+            Call&lt;List&lt;NewsItem&gt;&gt; getNews();
+
+            &#064;GET("/api/v1/events")
+            Call&lt;List&lt;EventItem&gt;&gt; getEvents();
+    }
+    </code></pre>
+</div>
+
+<div class="step">
+    <h3>1.7. Создание адаптеров для отображения данных</h3>
+    <p>
+        Не забудьте добавить картинку заглушки из ресурсов в папку <code>drawable</code>. 
+        Если их не существует, нарисуйте их сами с помощью <code>Adobe Photoshop</code> или <code>Paint</code>, если такие
+        программные ресурсы будут доступны.
+    </p>
+    <p>Создайте класс <code>EventsAdapter.java</code> :</p>
+    <pre><code>
+    public class EventsAdapter extends RecyclerView.Adapter&lt;EventsAdapter.EventViewHolder&gt; {
+        private List&lt;EventItem&gt; eventList;
+        public EventsAdapter(List&lt;EventItem&gt; eventList) { this.eventList = eventList; }
+
+        &#064;NonNull
+        &#064;Override
+        public EventViewHolder onCreateViewHolder(&#064;NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_event, parent, false);
+            return new EventViewHolder(view);
+        }
+        &#064;Override
+        public int getItemCount() {
+            return eventList.size();
+        }
+        public void updateData(List&lt;EventItem&gt; newEvents) {
+            this.eventList.clear();
+            this.eventList.addAll(newEvents);
+            notifyDataSetChanged();
+        }
+
+        &#064;Override
+        public void onBindViewHolder(&#064;NonNull EventViewHolder holder, int position) {
+            EventItem event = eventList.get(position);
+            if (event != null) {
+                holder.name.setText(event.name);
+                holder.description.setText(event.description);
+                holder.date.setText(event.date);
+                holder.author.setText(event.authorName);
+
+                if (event.isAddedToCalendar){
+                    holder.star.setImageResource(R.drawable.ic_star_enabled);
+                } else holder.star.setImageResource(R.drawable.ic_star_disabled);
+
+                holder.star.setOnClickListener(v -> {
+                    Context context = holder.itemView.getContext();
+
+                    if (!event.isAddedToCalendar) {
+                        long startMillis = parseDateToMillis(event.date);
+                        long endMillis = startMillis + 60 * 60 * 1000;
+                        Intent intent = new Intent(Intent.ACTION_INSERT);
+                        intent.setData(CalendarContract.Events.CONTENT_URI);
+                        intent.putExtra(CalendarContract.Events.TITLE, event.name);
+                        intent.putExtra(CalendarContract.Events.DESCRIPTION, event.description);
+                        intent.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, startMillis);
+                        intent.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endMillis);
+                        context.startActivity(intent);
+                        event.isAddedToCalendar = true;
+                        holder.star.setImageResource(R.drawable.ic_star_enabled);
+                    } else {
+                        Toast.makeText(context, "Событие уже добавлено", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }
+
+        private long parseDateToMillis(String dateString) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+            try {
+                Date date = sdf.parse(dateString);
+                return date != null ? date.getTime() : System.currentTimeMillis();
+            } catch (ParseException e) {
+                e.printStackTrace();
+                return System.currentTimeMillis();
+            }
+        }
+
+        public static class EventViewHolder extends RecyclerView.ViewHolder {
+            TextView name, description, date, author;
+            ImageButton star;
+            public EventViewHolder(&#064;NonNull View itemView) {
+                super(itemView);
+                name = itemView.findViewById(R.id.event_name);
+                description = itemView.findViewById(R.id.event_description);
+                date = itemView.findViewById(R.id.event_date);
+                author = itemView.findViewById(R.id.event_author);
+                star = itemView.findViewById(R.id.btnAddToCalendar);
+            }
+        }
+    }
+    </code></pre>
+
+    <p>Создайте класс <code>NewsAdapter.java</code> :</p>
+    <pre><code>
+    public class NewsAdapter extends RecyclerView.Adapter&lt;NewsAdapter.NewsViewHolder&gt; {
+        private List&lt;NewsItem&gt; newsList;
+        public NewsAdapter(List&lt;NewsItem&gt; newsList) { this.newsList = newsList; }
+        &#064;NonNull
+        &#064;Override
+        public NewsViewHolder onCreateViewHolder(&#064;NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_new, parent, false);
+            return new NewsViewHolder(view);
+        }
+        public void updateNews(List&lt;NewsItem&gt; NewsItemsList) {
+            this.newsList = NewsItemsList;
+            notifyDataSetChanged();
+        }
+        &#064;Override
+        public void onBindViewHolder(&#064;NonNull NewsViewHolder holder, int position) {
+            NewsItem news = newsList.get(position);
+            holder.name.setText(news.name);
+            holder.description.setText(news.description);
+            holder.date.setText(news.date);
+            holder.likes.setText(news.likes);
+            holder.dislikes.setText(news.dislikes);
+            Glide.with(holder.itemView.getContext()).load(news.image).into(holder.image);
+        }
+        &#064;Override
+        public int getItemCount() {
+            return newsList.size();
+        }
+        public static class NewsViewHolder extends RecyclerView.ViewHolder {
+            TextView name, description, likes, dislikes, date;
+            ImageView image;
+            public NewsViewHolder(&#064;NonNull View itemView) {
+                super(itemView);
+                name = itemView.findViewById(R.id.news_name);
+                description = itemView.findViewById(R.id.news_description);
+                likes = itemView.findViewById(R.id.news_likes);
+                dislikes = itemView.findViewById(R.id.news_dislikes);
+                date = itemView.findViewById(R.id.news_date);
+                image = itemView.findViewById(R.id.news_image);
+            }
+        }
+    }
+    </code></pre>
+</div>
+
+<div class="step">
+    <h3>1.8. Создание макетов элементов списка</h3>
+    <p>Для отображения новостей и событий в списках необходимо создать отдельные layout-файлы. Эти элементы будут использоваться в адаптерах при отображении информации.</p>
+
+    <p><strong>Макет элемента события — <code>item_event.xml</code></strong></p>
+    <pre><code>
+    &lt;LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="20dp"
+        android:background="&#064;drawable/background_items"
+        android:layout_marginBottom="20dp"
+        android:gravity="center"&gt;
+
+        &lt;ImageButton
+            android:id="&#064;+id/btnAddToCalendar"
+            android:layout_width="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginBottom="20dp"
+            android:contentDescription="Добавить в календарь"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="&#064;drawable/ic_star_disabled" /&gt;
+
+        &lt;TextView
+            android:id="&#064;+id/event_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="24sp"
+            android:textColor="&#064;color/black"
+            android:textStyle="bold" /&gt;
+
+        &lt;TextView
+            android:id="&#064;+id/event_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="&#064;color/black"
+            android:textStyle="normal" /&gt;
+
+        &lt;LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:orientation="horizontal"&gt;
+
+            &lt;TextView
+                android:id="&#064;+id/event_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:textColor="&#064;color/black"
+                android:textSize="20sp"
+                android:textStyle="normal" /&gt;
+
+            &lt;TextView
+                android:id="&#064;+id/event_author"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="&#064;color/black"
+                android:layout_gravity="right"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="2dp"
+                android:textSize="16sp"
+                android:textStyle="normal" /&gt;
+        &lt;/LinearLayout&gt;
+    &lt;/LinearLayout&gt;
+    </code></pre>
+    <p><strong>Макет элемента новости — <code>item_news.xml</code></strong></p>
+    <pre><code>
+    &lt;LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginTop="40dp"
+        android:background="&#064;drawable/background_items"
+        android:layout_marginBottom="40dp"
+        android:gravity="center"&gt;
+
+        &lt;LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="horizontal"&gt;
+
+            &lt;ImageView
+                android:id="&#064;+id/news_image"
+                android:layout_width="400px"
+                android:layout_height="400px"
+                android:scaleType="centerCrop" /&gt;
+        &lt;/LinearLayout&gt;
+
+        &lt;TextView
+            android:id="&#064;+id/news_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="16px"
+            android:textSize="24sp"
+            android:textColor="&#064;color/black"
+            android:textStyle="bold" /&gt;
+
+        &lt;TextView
+            android:id="&#064;+id/news_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="&#064;color/black"
+            android:paddingTop="16px"
+            android:textSize="24sp" /&gt;
+
+        &lt;LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:orientation="horizontal"&gt;
+
+            &lt;TextView
+                android:id="&#064;+id/news_likes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20px"
+                android:textColor="&#064;color/black"
+                android:paddingBottom="16px"
+                android:textSize="24sp" /&gt;
+
+            &lt;TextView
+                android:id="&#064;+id/news_dislikes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20px"
+                android:paddingBottom="16px"
+                android:textColor="&#064;color/black"
+                android:textSize="24sp" /&gt;
+
+            &lt;TextView
+                android:id="&#064;+id/news_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginLeft="200dp"
+                android:textColor="&#064;color/black"
+                android:gravity="right"
+                android:paddingBottom="16px"
+                android:textSize="24sp"
+                android:textStyle="normal" /&gt;
+        &lt;/LinearLayout&gt;
+&lt;/LinearLayout&gt;
+    </code></pre>
+
+    <p><strong>Фоновые стили — <code>background_buttons.xml</code> и <code>background_items.xml</code></strong></p>
+    <p><code>res/drawable/background_buttons.xml</code>:</p>
+    <pre><code>
+&lt;shape android:shape="rectangle"
+    xmlns:android="http://schemas.android.com/apk/res/android"&gt;
+    &lt;solid android:color="&#064;color/white"/&gt;
+    &lt;corners android:radius="20px"/&gt;
+&lt;/shape&gt;
+    </code></pre>
+    <p><code>res/drawable/background_items.xml</code>:</p>
+    <pre><code>
+&lt;shape xmlns:android="http://schemas.android.com/apk/res/android"&gt;
+    &lt;solid android:color="#B6FC8C"/&gt;
+    &lt;corners android:radius="16dp"/&gt;
+&lt;/shape&gt;
+    </code></pre>
+</div>
+
+<div class="step">
+    <h3>1.9. Настройка отображения новостей и событий</h3>
+    <p>На этом этапе реализуются компоненты архитектуры MVVM: ViewModel, Fragment и адаптер, которые обеспечивают загрузку и отображение данных о новостях и событиях через API.</p>
+
+    <p><strong>ViewModel для событий — <code>EventsViewModel.java</code></strong></p>
+    <pre><code>
+    public class EventsViewModel extends ViewModel {
+        private MutableLiveData&lt;List&lt;EventItem&gt;&gt; eventsList = new MutableLiveData&lt;&gt;();
+        private IApiService apiService;
+
+        public EventsViewModel(IApiService apiService) {
+            this.apiService = apiService;
+            loadEvents();
+        }
+
+    public LiveData&lt;List&lt;EventItem&gt;&gt; getEvents() { return eventsList; }
+
+    private void loadEvents() {
+        apiService.getEvents().enqueue(new Callback&lt;List&lt;EventItem&gt;&gt;() {
+            &#064;Override
+            public void onResponse(Call&lt;List&lt;EventItem&gt;&gt; call, Response&lt;List&lt;EventItem&gt;&gt; response) {
+                if (response.isSuccessful() &amp;&amp; response.body() != null) {
+                    eventsList.setValue(response.body());
+                } else {
+                    Log.e("EventsViewModel", "Error: Response unsuccessful or empty body");
+                    eventsList.setValue(new ArrayList&lt;&gt;());
+                }
+            }
+            &#064;Override
+                public void onFailure(Call&lt;List&lt;EventItem&gt;&gt; call, Throwable t) {
+                Log.e("EventsViewModel", "Error loading events", t);
+                eventsList.setValue(new ArrayList&lt;&gt;());
+                }
+            });
+        }
+    }
+    </code></pre>
+
+    <p><strong>ViewModel для новостей — <code>NewsViewModel.java</code></strong></p>
+    <pre><code>
+    public class NewsViewModel extends ViewModel {
+        private MutableLiveData&lt;List&lt;NewsItem&gt;&gt; newsList = new MutableLiveData&lt;&gt;();
+        private IApiService apiService;
+
+        public NewsViewModel(IApiService api) {
+            apiService = api;
+            loadNews();
+        }
+
+    public LiveData&lt;List&lt;NewsItem&gt;&gt; getNews() {
+        return newsList;
+    }
+
+    private void loadNews() {
+        apiService.getNews().enqueue(new Callback&lt;List&lt;NewsItem&gt;&gt;() {
+            &#064;Override
+            public void onResponse(Call&lt;List&lt;NewsItem&gt;&gt; call, Response&lt;List&lt;NewsItem&gt;&gt; response) {
+                if (response.isSuccessful() &amp;&amp; response.body() != null) {
+                    newsList.setValue(response.body());
+                } else {
+                    Log.e("NewsViewModel", "Response unsuccessful or body null!");
+                    newsList.setValue(new ArrayList&lt;&gt;());
+                }
+            }
+            &#064;Override
+            public void onFailure(Call&lt;List&lt;NewsItem&gt;&gt; call, Throwable t) {
+                Log.e("NewsViewModel", "Error", t);
+                newsList.setValue(new ArrayList&lt;&gt;());
+            }
+        });
+    }
+}
+    </code></pre>
+
+    <p><strong>Фрагмент для отображения новостного элемента — <code>NewsFragment.java</code></strong></p>
+    <pre><code>
+    public class NewsFragment extends Fragment {
+    private static final String ARG_NEWS = "news_item";
+    private NewsItem newsItem;
+
+    public static NewsFragment newInstance(NewsItem news) {
+        NewsFragment fragment = new NewsFragment();
+        Bundle args = new Bundle();
+        args.putSerializable(ARG_NEWS, news);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    &#064;Override
+    public void onCreate(&#064;Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null){
+            newsItem = (NewsItem) getArguments().getSerializable(ARG_NEWS);
+        }
+    }
+
+    &#064;Nullable
+    &#064;Override
+    public View onCreateView(&#064;NonNull LayoutInflater inflater, &#064;Nullable ViewGroup container, &#064;Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.item_new, container, false);
+        ImageView imageView = view.findViewById(R.id.news_image);
+        TextView titleView = view.findViewById(R.id.news_name);
+        TextView descriptionView = view.findViewById(R.id.news_description);
+        TextView likesView = view.findViewById(R.id.news_likes);
+        TextView dislikesView = view.findViewById(R.id.news_dislikes);
+        TextView dateView = view.findViewById(R.id.news_date);
+
+        if (newsItem != null) {
+            titleView.setText(newsItem.name);
+            descriptionView.setText(newsItem.description);
+            likesView.setText("+" + newsItem.likes);
+            dislikesView.setText("-" + newsItem.dislikes);
+            dateView.setText(newsItem.date);
+            Glide.with(this).load(newsItem.image).into(imageView);
+        }
+        return view;
+    }
+}
+    </code></pre>
+
+    <p><strong>Адаптер фрагментов — <code>NewsPagerAdapter.java</code></strong></p>
+    <pre><code>
+    public class NewsPagerAdapter extends FragmentStateAdapter {
+    private List&lt;Fragment&gt; fragmentList;
+
+    public NewsPagerAdapter(&#064;NonNull MainActivity fragment, List&lt;Fragment&gt; fragments) {
+        super(fragment);
+        this.fragmentList = fragments;
+    }
+
+    &#064;NonNull
+    &#064;Override
+    public Fragment createFragment(int position) {
+        return fragmentList.get(position);
+    }
+
+    &#064;Override
+    public int getItemCount() {
+        return fragmentList.size();
+    }
+}
+    </code></pre>
+</div>
+
+<div class="step">
+    <h3>1.10. Настройка главного экрана приложения — MainActivity</h3>
+    <p>
+        Главный экран Android-приложения инициализирует ViewModel'и, адаптеры и отображение списков новостей и событий. Ниже приведена полная реализация класса <code>MainActivity.java</code>:
+    </p>
+    <pre><code>
+public class MainActivity extends AppCompatActivity {
+    private IApiService apiService;
+    private ViewPager2 viewPager2;
+    private androidx.recyclerview.widget.RecyclerView eventsList;
+    private EventsAdapter eventsAdapter;
+    private NewsAdapter newsAdapter;
+    private NewsPagerAdapter NewsPagerAdapter;
+    private NewsViewModel newsViewModel;
+    private EventsViewModel eventsViewModel;
+
+    &#064;Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        Retrofit retrofit = new Retrofit.Builder()
+            .baseUrl("http://API_IP:5000/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build();
+
+        apiService = retrofit.create(IApiService.class);
+
+        newsViewModel = new ViewModelProvider(this, new ViewModelProvider.Factory() {
+            &#064;NonNull
+            &#064;Override
+            public &lt;T extends ViewModel&gt; T create(&#064;NonNull Class&lt;T&gt; modelClass) {
+                return (T) new NewsViewModel(apiService);
+            }
+        }).get(NewsViewModel.class);
+
+        eventsViewModel = new ViewModelProvider(this, new ViewModelProvider.Factory() {
+            &#064;NonNull
+            &#064;Override
+            public &lt;T extends ViewModel&gt; T create(&#064;NonNull Class&lt;T&gt; modelClass) {
+                return (T) new EventsViewModel(apiService);
+            }
+        }).get(EventsViewModel.class);
+
+        viewPager2 = findViewById(R.id.viewpager2);
+        eventsList = findViewById(R.id.events_list);
+
+        newsAdapter = new NewsAdapter(new ArrayList&lt;&gt;());
+        eventsAdapter = new EventsAdapter(new ArrayList&lt;&gt;());
+
+        eventsList.setLayoutManager(new LinearLayoutManager(this));
+        eventsList.setAdapter(eventsAdapter);
+
+        newsViewModel.getNews().observe(this, newsItems -&gt; {
+            if (newsItems != null) {
+                newsAdapter.updateNews(newsItems);
+                NewsPagerAdapter = new NewsPagerAdapter(this, createNewsFragments(newsItems));
+                viewPager2.setAdapter(NewsPagerAdapter);
+            }
+        });
+
+        eventsViewModel.getEvents().observe(this, eventItems -&gt; {
+            if (eventItems != null) {
+                eventsAdapter.updateData(eventItems);
+            }
+        });
+    }
+
+    private List&lt;Fragment&gt; createNewsFragments(List&lt;NewsItem&gt; newsItems) {
+        List&lt;Fragment&gt; fragments = new ArrayList&lt;&gt;();
+        for (NewsItem news : newsItems) {
+            fragments.add(NewsFragment.newInstance(news));
+        }
+        return fragments;
+    }
+
+    public void onEvents(View view) {
+        viewPager2.setVisibility(View.GONE);
+        eventsList.setVisibility(View.VISIBLE);
+    }
+
+    public void onNews(View view) {
+        eventsList.setVisibility(View.GONE);
+        viewPager2.setVisibility(View.VISIBLE);
+    }
+}
+    </code></pre>
+
+    <p>На этом этапе разработка мобильного приложения окончена.</p>
+    <div class="note">
+        <p>С мобильным приложением из сессии 5 можно ознакомиться в готовом проекте <a asp-page="/Sessions/Session6">ознакомьтесь с готовым материалом</a> в конце страницы.</p>
+    </div>
+</div>
+
+<h2>2. Разработка календаря событий</h2>
+<p>На главной странице веб-приложения необходимо реализовать календарь с поддержкой:</p>
+<ul>
+    <li><strong>Отображения выходных дней</strong> — красным цветом.</li>
+    <li><strong>Текущего дня</strong> — выделен кружком.</li>
+    <li><strong>Дней рождения сотрудников</strong> — иконка тортика с подсказкой по наведению (ФИО).</li>
+    <li>
+        <strong>Цветовое отображение событий по количеству:</strong>
+        <ul>
+            <li>≥ 5 событий — <span style="color: #FC4343">красный (#FC4343)</span></li>
+            <li>< 2 событий — <span style="color: #89FC43">зеленый (#89FC43)</span></li>
+            <li>остальные случаи — <span style="color: #F8FC43">желтый (#F8FC43)</span></li>
+        </ul>
+    </li>
+    <li>Календарь должен поддерживать <strong>пролистывание месяцев</strong>.</li>
+    <li>Начало недели — всегда <strong>с понедельника</strong>.</li>
+</ul>
+
+<div class="step">
+    <h3>2.1. Доработка JavaScript скрипта</h3>
+    <p>На главной странице веб-приложения реализуется поиск по следующим сущностям:</p>
+    <ul>
+        <li>Работники</li>
+        <li>Новости</li>
+        <li>События</li>
+    </ul>
+
+    <p>Особенности реализации поиска:</p>
+    <ul>
+        <li>Работает <strong>без учета регистра</strong>.</li>
+        <li>Поиск активируется <strong>при вводе текста</strong>.</li>
+        <li>Результаты отображаются <strong>в соответствующих блоках</strong>.</li>
+        <li>Если нет результатов — выводится сообщение "ничего не найдено".</li>
+        <li>При очистке строки поиска — <strong>отображаются все данные по умолчанию</strong>.</li>
+    </ul>
+    <p>Необходимо добавить функцию поиска <code>performSearch</code>, которая по запросу будет показывать только соответствующие элементы в блоках, а также обновить <code>document.addEventListener</code> функцию: </p>
+    <pre><code>
+// Функция поиска
+function performSearch(query) {
+    const lowerQuery = query.toLowerCase().trim();
+    // без учета регистра
+    if (!lowerQuery) {
+        // Если запрос пустой, показываем все данные
+        displayEmployees(allEmployees);
+        displayNews(allNews);
+        displayEvents(allEvents);
+        return;
+    }
+    // Поиск сотрудников
+    const filteredEmployees = allEmployees.filter(employee =&gt;
+        (employee.fullName && employee.fullName.toLowerCase().includes(lowerQuery)) ||
+        (employee.name && employee.name.toLowerCase().includes(lowerQuery)) ||
+        (employee.email && employee.email.toLowerCase().includes(lowerQuery)) ||
+        (employee.workPhone && employee.workPhone.toLowerCase().includes(lowerQuery)) ||
+        (employee.birthdate && employee.birthdate.toLowerCase().includes(lowerQuery))
+    );
+    displayEmployees(filteredEmployees);
+    // Поиск новостей
+    const filteredNews = allNews.filter(news =&gt;
+        (news.name && news.name.toLowerCase().includes(lowerQuery)) ||
+        (news.description && news.description.toLowerCase().includes(lowerQuery)) ||
+        (news.date && news.date.toLowerCase().includes(lowerQuery))
+    );
+    displayNews(filteredNews);
+    // Поиск событий
+    const filteredEvents = allEvents.filter(event =&gt;
+        (event.name && event.name.toLowerCase().includes(lowerQuery)) ||
+        (event.description && event.description.toLowerCase().includes(lowerQuery)) ||
+        (event.date && event.date.toLowerCase().includes(lowerQuery)) ||
+        (event.authorName && event.authorName.toLowerCase().includes(lowerQuery))
+    );
+    displayEvents(filteredEvents);
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    loadEmployees();
+    loadNews();
+    loadEvents();
+    generateCalendar(new Date()); // генерируем календарь
+    const searchInput = document.querySelector('input[type="text"]');
+    let searchTimeout;
+    searchInput.addEventListener('input', function () {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            performSearch(this.value);
+        }, 300);
+    });
+    searchInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            this.value = '';
+            performSearch('');
+        }
+    });
+});
+    </code></pre>
+</div>
+
+<div class="step">
+    <h3>2.2. Генерация QR-кода сотрудника</h3>
+    <p>У каждого сотрудника необходимо реализовать показ QR-кода в виде <code>vCard</code>, для этого необходима библиотека: <code>qrcode.min.js</code>, в Сессии 4 уже в <code>Index.cshtml</code> добавляли строку подключения этой библиотеки.</p>
+    <pre><code>
+    function showQRCode(name, email, phone, position, button) {
+        const vCardData = `BEGIN:VCARD\nVERSION:3.0\nFN:${name}\nTITLE:${position}\nTEL;WORK;VOICE:${phone}\nEMAIL;WORK;INTERNET:${email}\nEND:VCARD`;
+        const qrCodeDiv = document.createElement("div");
+        qrCodeDiv.classList.add("qr-code");
+        //кнопка закрытия QR-кода
+        const closeButton = document.createElement("button");
+        closeButton.textContent = "×";
+        closeButton.style.top = "5px";
+        closeButton.style.right = "5px";
+        closeButton.style.background = "none";
+        closeButton.style.border = "none";
+        closeButton.style.fontSize = "20px";
+        closeButton.style.cursor = "pointer";
+        closeButton.onclick = () => qrCodeDiv.replaceWith(button);
+        qrCodeDiv.appendChild(closeButton);
+        QRCode.toDataURL(vCardData, {
+            width: 200,
+            height: 200,
+            margin: 1,
+            color: {
+                dark: '#000000',
+                light: '#ffffff'
+            }
+        }, (error, url) => {
+            if (error) {
+                console.error('QR generation error:', error);
+                return;
+            }
+            const img = document.createElement("img");
+            img.src = url;
+            img.alt = "QR код визитки";
+            qrCodeDiv.appendChild(img);
+            button.replaceWith(qrCodeDiv);
+        });
+    }
+    </code></pre>
+</div>
+
+<div class="step">
+    <h3>2.3. Разработка календаря событий</h3>
+    <p>У карточки события необходимо добавить функцию скачивания <code>.ics</code> файла события. Код реализации в контроллере <code>EventsController</code> :</p>
+    <pre><code>
+    [HttpGet("{eventId}/calendar")]
+        public IActionResult DownloadCalendar(int eventId)
+        {
+            var ev = _db.events.Find(eventId);
+            var authorName = _db.employees.FirstOrDefault(x => x.Id == ev.AuthorId).FullName;
+            if (ev == null) return NotFound();
+            var ics = $&#064;"BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+SUMMARY:{ev.Name}
+DTSTART:{ev.Date:yyyyMMddTHHmmssZ}
+UID:{Guid.NewGuid()}
+DESCRIPTION:{ev.Description}
+ORGANIZER:{authorName}
+STATUS:CONFIRMED
+END:VEVENT
+END:VCALENDAR";
+            return File(Encoding.UTF8.GetBytes(ics), "text/calendar", $"event {eventId}.ics");
+        }
+    </code></pre>
+    <p>А также сама функция в <code>script.js</code> :</p>
+    <pre><code>
+function downloadCalendar(eventId) {
+    window.location.href = `/api/v1/events/${eventId}/calendar`;
+}
+    </code></pre>
+
+    <p>
+        Теперь перейдем к функции генерации календаря. Его необходимо создать с нуля, реализовать на элементах дней события и дни рождения сотрудников, а также прописать логику парсинга дат, функции перехода месяцев вперед и назад.
+    </p>
+    <pre><code>
+let currentDate = new Date(); // Текущая дата
+function generateCalendar(date) { // Функция генерации календаря
+    const container = document.getElementById("calendar-days"); // контейнер для дней
+    const monthYear = document.getElementById("calendar-month-year"); // Контейнер годов
+    const monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
+    // контейнер месяцев
+    monthYear.textContent = `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
+    container.innerHTML = "";
+    let firstDay = new Date(date.getFullYear(), date.getMonth(), 1).getDay(); // От текущего месяца найти первый день
+    let lastDate = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+    Promise.all([
+        fetch("/api/v1/events").then(res => res.json()),
+        fetch("/api/v1/employees/desktop").then(res => res.json()) // решить проблему с парсингом даты рождения!
+    ]).then(([events, employees]) => {
+        console.log("Events dates:", events.slice(0, 3).map(e => e.date));
+        console.log("Birthdates:", employees.slice(0, 3).map(e => e.birthdate));
+        // Универсальная функция для парсинга дат
+        const parseDate = (dateString) => {
+            if (!dateString) return null;
+            try {
+                // Если дата в формате ISO с временем (YYYY-MM-DDTHH:mm:ss)
+                if (dateString.includes('T')) {
+                    return new Date(dateString);
+                }
+                // Если дата в формате YYYY-MM-DD
+                else if (dateString.includes('-') && dateString.split('-')[0].length === 4) {
+                    const parts = dateString.split('-');
+                    return new Date(parts[0], parts[1] - 1, parts[2]);
+                }
+                // Если дата в формате MM-DD-YYYY
+                else if (dateString.includes('-')) {
+                    const parts = dateString.split('-');
+                    return new Date(parts[2], parts[0] - 1, parts[1]);
+                }
+                // Если дата в формате DD.MM.YYYY
+                else if (dateString.includes('.')) {
+                    const [day, month, year] = dateString.split('.').map(Number);
+                    return new Date(year, month - 1, day);
+                }
+                // Пробуем распарсить как есть
+                else {
+                    return new Date(dateString);
+                }
+            } catch (e) {
+                console.error("Error parsing date:", dateString, e);
+                return null;
+            }
+        };
+        //обработка событий
+        const eventsByDate = {};
+        events.forEach(event => {
+            if (!event.date) return;
+            const eventDate = parseDate(event.date);
+            if (!eventDate || isNaN(eventDate.getTime())) {
+                console.warn("Invalid event date:", event.date);
+                return;
+            }
+            //проверка, что событие в текущем месяце
+            if (eventDate.getFullYear() === date.getFullYear() &&
+                eventDate.getMonth() === date.getMonth()) {
+                const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}
+                -${String(eventDate.getDate()).padStart(2, '0')}`;
+                if (!eventsByDate[dateKey]) {
+                    eventsByDate[dateKey] = [];
+                }
+                eventsByDate[dateKey].push(event);
+            }
+        });
+        //обработка дней рождения
+        const birthdaysByDate = {};
+        employees.forEach(employee => {
+            if (!employee.birthDate) return;
+            const birthDate = parseDate(employee.birthDate);
+            if (!birthDate || isNaN(birthDate.getTime())) {
+                console.warn("Invalid birthdate:", employee.birthDate);
+                return;
+            }
+            //проверка, что день рождения в текущем месяце (год не учитываем)
+            if (birthDate.getMonth() + 1 === date.getMonth() + 1) {
+                const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}
+                -${String(birthDate.getDate()).padStart(2, '0')}`;
+                if (!birthdaysByDate[dateKey]) {
+                    birthdaysByDate[dateKey] = [];
+                }
+                birthdaysByDate[dateKey].push(employee.fullName);
+            }
+        });
+        //генерация календаря
+        for (let i = 0; i &lt; (firstDay === 0 ? 6 : firstDay - 1); i++) {
+            let emptyDiv = document.createElement("div");
+            emptyDiv.classList.add("calendar-empty");
+            container.appendChild(emptyDiv);
+        }
+        for (let day = 1; day &lt;= lastDate; day++) {
+            let dayDiv = document.createElement("div");
+            dayDiv.classList.add("calendar-day");
+            const dayNumber = document.createElement("div");
+            dayNumber.textContent = day;
+            dayNumber.classList.add("day-number");
+            dayDiv.appendChild(dayNumber);
+            const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            const today = new Date();
+            const todayKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+            if (dateKey === todayKey) {
+                dayDiv.classList.add("today");
+                dayNumber.classList.add("today-circle");
+            }
+            if (eventsByDate[dateKey]) {
+                const eventCount = eventsByDate[dateKey].length;
+                if (eventCount &gt;= 5) {
+                    dayDiv.style.backgroundColor = "#FC4343";
+                } else if (eventCount &lt; 2) {
+                    dayDiv.style.backgroundColor = "#89FC43";
+                } else {
+                    dayDiv.style.backgroundColor = "#F8FC43";
+                }
+                dayDiv.title = `События: ${eventsByDate[dateKey].map(e =&gt; e.name || 'Без названия').join(", ")}`;
+            }
+            if (birthdaysByDate[dateKey]) {
+                const birthdayIcon = document.createElement("div");
+                birthdayIcon.classList.add("birthday-icon");
+                birthdayIcon.innerHTML = "🎂";
+                const tooltip = document.createElement("div");
+                tooltip.classList.add("birthday-tooltip");
+                tooltip.textContent = `Дни рождения: ${birthdaysByDate[dateKey].join(", ")}`;
+                birthdayIcon.appendChild(tooltip);
+                dayDiv.appendChild(birthdayIcon);
+            }
+            container.appendChild(dayDiv);
+        }
+    }).catch(error =&gt; {
+        console.error("Error loading calendar data:", error);
+    });
+}
+
+function prevMonth() {
+    currentDate.setMonth(currentDate.getMonth() - 1);
+    generateCalendar(currentDate);
+}
+
+function nextMonth() {
+    currentDate.setMonth(currentDate.getMonth() + 1);
+    generateCalendar(currentDate);
+}
+    </code></pre>
+</div>
+
+<h2>3. Отправка мобильного приложения и доработок Web-приложения в систему контроля версий</h2>
+
+<p>В Android Studio необходимо произвести следующие действия для подключения и загрузки проекта в систему контроля версий Git:</p>
+
+<div class="step">
+    <h3>3.1. Инициализация Git-репозитория в Android Studio</h3>
+    <ol>
+        <li>Откройте Android Studio и загрузите ваш проект.</li>
+        <li>Перейдите в меню <strong>VCS &rarr; Enable Version Control Integration…</strong>.</li>
+        <li>В открывшемся окне выберите <strong>Git</strong> и нажмите <strong>OK</strong>.</li>
+    </ol>
+
+    <div class="note">
+        <p>После включения интеграции, проект будет отслеживаться системой Git, и вы сможете выполнять команды коммита и пуша напрямую из среды.</p>
+    </div>
+</div>
+
+<div class="step">
+    <h3>3.2. Выполнение первого коммита</h3>
+    <ol>
+        <li>Перейдите в меню <strong>VCS &rarr; Commit…</strong> или нажмите <kbd>Ctrl+K</kbd> (Windows/Linux) или <kbd>⌘+K</kbd> (Mac).</li>
+        <li>Выберите все файлы, которые хотите закоммитить (по умолчанию все изменения уже выбраны).</li>
+        <li>Добавьте комментарий к коммиту, например: <code>Initial mobile app commit (Session 5)</code>.</li>
+        <li>Нажмите кнопку <strong>Commit</strong>, затем <strong>Commit and Push</strong>, если репозиторий уже привязан к удалённому.</li>
+    </ol>
+</div>
+
+<div class="step">
+    <h3>3.3. Привязка к удалённому репозиторию</h3>
+    <ol>
+        <li>Откройте <strong>Terminal</strong> в нижней части Android Studio или используйте внешний терминал.</li>
+        <li>Перейдите в корень проекта (если вы не в нем):</li>
+        <pre><code>cd путь_к_папке_проекта</code></pre>
+        <li>Добавьте ссылку на ваш удалённый репозиторий (например, GitHub):</li>
+        <pre><code>git remote add origin ссылка_на_удаленный_репозиторий</code></pre>
+        <li>Выполните команду push для первой загрузки кода:</li>
+        <pre><code>
+git add .
+git commit -m "Initial commit of Android app (Session 5)"
+git push -u origin master
+        </code></pre>
+    </ol>
+</div>
+
+<div class="note">
+    <p>После успешной отправки, проект будет доступен в указанном удалённом репозитории.</p>
+</div>
+
+<div class="step">
+    <h3>3.4. Работа с системой контроля версий в Android Studio</h3>
+    <p>После первичной настройки Git вы сможете:</p>
+    <ul>
+        <li>Выполнять коммиты через <strong>VCS &rarr; Commit</strong>.</li>
+        <li>Обновлять проект через <strong>VCS &rarr; Git &rarr; Pull</strong>.</li>
+        <li>Отправлять изменения через <strong>VCS &rarr; Git &rarr; Push</strong>.</li>
+    </ul>
+    <p>Отправьте Web-приложение в систему контроля версий через инструменты в <strong>Visual Studio 2022</strong>, или через командную строку, убедившись, что запускаете ее в корне папки приложения:</p>
+<pre>
+<code>
+            git add .
+            git commit -m "Update Web-project (Session 5)"
+            git push -u origin master
+        </code>
+    </pre>
+    <div class="note">
+        <p>С готовым Web-проектом из сессии 4-5 и мобильным приложением можно ознакомиться в готовом проекте <a asp-page="/Sessions/Session6">ознакомьтесь с готовым материалом</a> в конце страницы.</p>
+    </div>
+</div>
+
+
+

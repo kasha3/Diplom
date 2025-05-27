@@ -1,0 +1,60 @@
+﻿@page
+@using TestAPI.Models
+@model IndexModel
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Новости и события</title>
+    <link rel="stylesheet" href="~/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <script defer src="~/js/script.js"></script>
+</head>
+<body>
+    <header>
+        <div class="logo"><img src="~/images/Logo.png" alt="Лого"></div>
+        <input type="text" placeholder="Введите для поиска">
+    </header>
+    <main>
+        <section class="employees-section">
+            <h2>Сотрудники</h2>
+            <div class="employees-scroll-container">
+                <div id="employees-container" class="employees-grid"></div>
+            </div>
+        </section>
+        <div class="main-content">
+            <section class="calendar-section">
+                <h2>Календарь событий</h2>
+                <div id="calendar-container">
+                    <div id="calendar-header">
+                        <button onclick="prevMonth()">❮</button>
+                        <span id="calendar-month-year"></span>
+                        <button onclick="nextMonth()">❯</button>
+                    </div>
+                    <div class="weekdays">
+                        <div>П</div>
+                        <div>В</div>
+                        <div>С</div>
+                        <div>Ч</div>
+                        <div>П</div>
+                        <div>С</div>
+                        <div>В</div>
+                    </div>
+                    <div id="calendar-days"></div>
+                </div>
+            </section>
+            <div class="right-column">
+                <section class="news-section">
+                    <h2>Новости</h2>
+                    <div id="news-container" class="news-grid"></div>
+                </section>
+                <section class="events-section">
+                    <h2>События</h2>
+                    <div id="events-container" class="events-grid"></div>
+                </section>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

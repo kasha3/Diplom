@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TestAPI</name>
+    </assembly>
+    <members>
+        <member name="M:TestAPI.Controllers.AbsencesController.GetAbsences">
+            <summary>
+            Получить список прогулов
+            </summary>
+            <returns>Список прогулов</returns>
+        </member>
+        <member name="M:TestAPI.Controllers.AbsencesController.PostAbsences(TestAPI.Models.Absences)">
+            <summary>
+            Создать новый прогул
+            </summary>
+            <param name="abs">Прогул</param>
+            <returns>Новый прогул</returns>
+        </member>
+        <member name="M:TestAPI.Controllers.AbsencesController.UpdateAbsences(System.Int32,TestAPI.Models.Absences)">
+            <summary>
+            Редактировать прогул
+            </summary>
+            <param name="id">Идентификатор</param>
+            <param name="updatedAbsence">Отредактируйте прогул</param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>
