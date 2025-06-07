@@ -845,7 +845,8 @@ document.addEventListener("DOMContentLoaded", function () {
     <p>У каждого сотрудника необходимо реализовать показ QR-кода в виде <code>vCard</code>, для этого необходима библиотека: <code>qrcode.min.js</code>, в Сессии 4 уже в <code>Index.cshtml</code> добавляли строку подключения этой библиотеки.</p>
     <pre><code>
     function showQRCode(name, email, phone, position, button) {
-        const vCardData = `BEGIN:VCARD\nVERSION:3.0\nFN:${name}\nTITLE:${position}\nTEL;WORK;VOICE:${phone}\nEMAIL;WORK;INTERNET:${email}\nEND:VCARD`;
+        const vCardData = `BEGIN:VCARD\nVERSION:3.0\nFN:${name}\nTITLE:${position}\nTEL;
+        WORK;VOICE:${phone}\nEMAIL;WORK;INTERNET:${email}\nEND:VCARD`;
         const qrCodeDiv = document.createElement("div");
         qrCodeDiv.classList.add("qr-code");
         //кнопка закрытия QR-кода
@@ -1017,9 +1018,11 @@ function generateCalendar(date) { // Функция генерации кале�
             dayNumber.textContent = day;
             dayNumber.classList.add("day-number");
             dayDiv.appendChild(dayNumber);
-            const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).
+                padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             const today = new Date();
-            const todayKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+            const todayKey = `${today.getFullYear()}-${String(today.getMonth() + 1).
+                padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
             if (dateKey === todayKey) {
                 dayDiv.classList.add("today");
                 dayNumber.classList.add("today-circle");

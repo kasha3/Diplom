@@ -101,7 +101,7 @@ namespace TestDesktop.Elements {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/TestDesktop;V1.0.0.0;component/elements/employeeitem.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/TestDesktop;component/elements/employeeitem.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\Elements\EmployeeItem.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

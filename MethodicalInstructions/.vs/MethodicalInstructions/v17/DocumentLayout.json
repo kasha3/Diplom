@@ -5,6 +5,18 @@
     {
       "AbsoluteMoniker": "D:0:0:{EB014202-2D07-453D-A4DA-E4C8827FA2A0}|MethodicalInstructions.csproj|c:\\users\\admin\\desktop\\diplom\\modules\\methodicalinstructions\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{EB014202-2D07-453D-A4DA-E4C8827FA2A0}|MethodicalInstructions.csproj|solutionrelative:properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EB014202-2D07-453D-A4DA-E4C8827FA2A0}|MethodicalInstructions.csproj|c:\\users\\admin\\desktop\\diplom\\modules\\methodicalinstructions\\pages\\sessions\\session5.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{EB014202-2D07-453D-A4DA-E4C8827FA2A0}|MethodicalInstructions.csproj|solutionrelative:pages\\sessions\\session5.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EB014202-2D07-453D-A4DA-E4C8827FA2A0}|MethodicalInstructions.csproj|c:\\users\\admin\\desktop\\diplom\\modules\\methodicalinstructions\\wwwroot\\css\\site.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{EB014202-2D07-453D-A4DA-E4C8827FA2A0}|MethodicalInstructions.csproj|solutionrelative:wwwroot\\css\\site.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EB014202-2D07-453D-A4DA-E4C8827FA2A0}|MethodicalInstructions.csproj|c:\\users\\admin\\desktop\\diplom\\modules\\methodicalinstructions\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EB014202-2D07-453D-A4DA-E4C8827FA2A0}|MethodicalInstructions.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -14,35 +26,46 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 7,
+          "SelectedChildIndex": 3,
           "Children": [
             {
-              "$type": "Bookmark",
-              "Name": "ST:131:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Session5.cshtml",
+              "DocumentMoniker": "C:\\Users\\Admin\\Desktop\\diplom\\modules\\MethodicalInstructions\\Pages\\Sessions\\Session5.cshtml",
+              "RelativeDocumentMoniker": "Pages\\Sessions\\Session5.cshtml",
+              "ToolTip": "C:\\Users\\Admin\\Desktop\\diplom\\modules\\MethodicalInstructions\\Pages\\Sessions\\Session5.cshtml",
+              "RelativeToolTip": "Pages\\Sessions\\Session5.cshtml",
+              "ViewState": "AQIAABoEAAAAAAAAAAAAAAAEAAAQAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-06-04T18:17:15.392Z",
+              "EditorCaption": ""
             },
             {
-              "$type": "Bookmark",
-              "Name": "ST:130:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\Admin\\Desktop\\diplom\\modules\\MethodicalInstructions\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "C:\\Users\\Admin\\Desktop\\diplom\\modules\\MethodicalInstructions\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-04T18:12:43.963Z",
+              "EditorCaption": ""
             },
             {
-              "$type": "Bookmark",
-              "Name": "ST:133:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:132:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:129:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:134:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "site.css",
+              "DocumentMoniker": "C:\\Users\\Admin\\Desktop\\diplom\\modules\\MethodicalInstructions\\wwwroot\\css\\site.css",
+              "RelativeDocumentMoniker": "wwwroot\\css\\site.css",
+              "ToolTip": "C:\\Users\\Admin\\Desktop\\diplom\\modules\\MethodicalInstructions\\wwwroot\\css\\site.css",
+              "RelativeToolTip": "wwwroot\\css\\site.css",
+              "ViewState": "AQIAAAkAAAAAAAAAAAAAACEAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2025-06-04T18:10:51.466Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -52,7 +75,7 @@
               "RelativeDocumentMoniker": "Properties\\launchSettings.json",
               "ToolTip": "C:\\Users\\Admin\\Desktop\\diplom\\modules\\MethodicalInstructions\\Properties\\launchSettings.json",
               "RelativeToolTip": "Properties\\launchSettings.json",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABwAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
               "WhenOpened": "2025-05-27T21:05:12.471Z",
               "EditorCaption": ""

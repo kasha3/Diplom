@@ -93,7 +93,7 @@ namespace TestDesktop.Pages {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/TestDesktop;V1.0.0.0;component/pages/absencepage.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/TestDesktop;component/pages/absencepage.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\Pages\AbsencePage.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);
