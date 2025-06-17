@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "C:\\Users\\Admin\\Desktop\\diplom\\modules\\MethodicalInstructions\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{EB014202-2D07-453D-A4DA-E4C8827FA2A0}|MethodicalInstructions.csproj|c:\\users\\admin\\desktop\\diplom\\modules\\methodicalinstructions\\pages\\sessions\\session4.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{EB014202-2D07-453D-A4DA-E4C8827FA2A0}|MethodicalInstructions.csproj|solutionrelative:pages\\sessions\\session4.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{EB014202-2D07-453D-A4DA-E4C8827FA2A0}|MethodicalInstructions.csproj|c:\\users\\admin\\desktop\\diplom\\modules\\methodicalinstructions\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{EB014202-2D07-453D-A4DA-E4C8827FA2A0}|MethodicalInstructions.csproj|solutionrelative:properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
@@ -26,11 +30,24 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
+              "Title": "Session4.cshtml",
+              "DocumentMoniker": "C:\\Users\\Admin\\Desktop\\diplom\\modules\\MethodicalInstructions\\Pages\\Sessions\\Session4.cshtml",
+              "RelativeDocumentMoniker": "Pages\\Sessions\\Session4.cshtml",
+              "ToolTip": "C:\\Users\\Admin\\Desktop\\diplom\\modules\\MethodicalInstructions\\Pages\\Sessions\\Session4.cshtml",
+              "RelativeToolTip": "Pages\\Sessions\\Session4.cshtml",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAUAAABmAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-06-17T16:21:28.925Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "Session5.cshtml",
               "DocumentMoniker": "C:\\Users\\Admin\\Desktop\\diplom\\modules\\MethodicalInstructions\\Pages\\Sessions\\Session5.cshtml",
               "RelativeDocumentMoniker": "Pages\\Sessions\\Session5.cshtml",
@@ -38,12 +55,11 @@
               "RelativeToolTip": "Pages\\Sessions\\Session5.cshtml",
               "ViewState": "AQIAABoEAAAAAAAAAAAAAAAEAAAQAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-06-04T18:17:15.392Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-04T18:17:15.392Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\Admin\\Desktop\\diplom\\modules\\MethodicalInstructions\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
@@ -51,12 +67,11 @@
               "RelativeToolTip": "Program.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-04T18:12:43.963Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-04T18:12:43.963Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "site.css",
               "DocumentMoniker": "C:\\Users\\Admin\\Desktop\\diplom\\modules\\MethodicalInstructions\\wwwroot\\css\\site.css",
               "RelativeDocumentMoniker": "wwwroot\\css\\site.css",
@@ -64,12 +79,11 @@
               "RelativeToolTip": "wwwroot\\css\\site.css",
               "ViewState": "AQIAAAkAAAAAAAAAAAAAACEAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2025-06-04T18:10:51.466Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-06-04T18:10:51.466Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "launchSettings.json",
               "DocumentMoniker": "C:\\Users\\Admin\\Desktop\\diplom\\modules\\MethodicalInstructions\\Properties\\launchSettings.json",
               "RelativeDocumentMoniker": "Properties\\launchSettings.json",
